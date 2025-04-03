@@ -1,0 +1,9 @@
+.container {
+    text-align: center;
+}
+
+.board {
+    display: flex;
+    justify-content: space-between;
+    overflow-x: auto;
+}
