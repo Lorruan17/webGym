@@ -1,4 +1,3 @@
-"use client"
 import { ReactNode, useState, useEffect } from "react";
 import { Image, Layout, Menu } from "antd";
 import { useRouter } from "next/navigation";
@@ -22,6 +21,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string>("1");
+  const [name, setName] = useState<string | null>(null);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -29,7 +29,17 @@ export default function MainLayout({ children }: MainLayoutProps) {
   };
 
   useEffect(() => {
-    const pathname = window.location.pathname; // Acessando a URL atual
+    const user = localStorage.getItem("user");
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      // Pegando o primeiro nome, separando o nome completo por espaço
+      const firstName = parsedUser?.name?.split(" ")[0] || null;
+      setName(firstName);
+    }
+  }, []);
+
+  useEffect(() => {
+    const pathname = window.location.pathname;
     if (pathname.includes("/home")) {
       setSelectedKey("1");
     } else if (pathname.includes("/alunos")) {
@@ -37,37 +47,64 @@ export default function MainLayout({ children }: MainLayoutProps) {
     } else if (pathname.includes("/configuracoes")) {
       setSelectedKey("3");
     }
-  }, []); // Este efeito será chamado apenas uma vez, após o carregamento da página
+  }, []);
 
   return (
     <Layout style={{ minHeight: "100vh" }} className={styles.container}>
-      <Sider collapsible collapsed={collapsed} trigger={null} style={{
-          backgroundColor: "white",
-          borderRadius: "20px"
-      }}>
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        trigger={null}
+        style={{ backgroundColor: "white", borderRadius: "20px" }}
+      >
         <div className={styles.logo}>
-          <Image className={styles.img} src="images/logo.png" preview={false} />
+          <Image className={styles.img} src="/images/logo.png" preview={false} />
         </div>
-        <Menu selectedKeys={[selectedKey]} defaultSelectedKeys={["1"]}>
-          <Menu.Item onClick={() => setCollapsed(!collapsed)} icon={
-            collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
-          } />
-          <Menu.Item key="1" icon={<HomeOutlined />} onClick={() => router.push("/home")}>
+        <Menu selectedKeys={[selectedKey]} mode="inline">
+          <Menu.Item
+            key="toggle"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            title="Expandir/Reduzir"
+          />
+          <Menu.Item
+            key="1"
+            icon={<HomeOutlined />}
+            onClick={() => router.push("/home")}
+            title="Página Inicial"
+          >
             Home
           </Menu.Item>
-          <Menu.Item key="2" icon={<UserOutlined />} onClick={() => router.push("/alunos")}>
+          <Menu.Item
+            key="2"
+            icon={<UserOutlined />}
+            onClick={() => router.push("/alunos")}
+            title="Alunos"
+          >
             Alunos
           </Menu.Item>
-          <Menu.Item key="3" icon={<SettingOutlined />} onClick={() => router.push("/configuracoes")}>
+          <Menu.Item
+            key="3"
+            icon={<SettingOutlined />}
+            onClick={() => router.push("/configuracoes")}
+            title="Configurações"
+          >
             Configurações
           </Menu.Item>
-          <Menu.Item key="4" icon={<LogoutOutlined />} onClick={handleLogout}>
+          <Menu.Item
+            key="4"
+            icon={<LogoutOutlined />}
+            onClick={handleLogout}
+            title="Sair"
+          >
             Sair
           </Menu.Item>
         </Menu>
       </Sider>
       <Layout>
-        <Header className={styles.header}>Bem-vindo!</Header>
+        <Header className={styles.header}>
+          Seja bem-vindo{name ? `, ${name}` : ""}!
+        </Header>
         <Content className={styles.content}>{children}</Content>
       </Layout>
     </Layout>

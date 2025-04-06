@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Form, Input, Button, Card, Image, Typography } from "antd";
 import { authenticateUser } from "../utils/auth";
 import styles from "./login.module.css";
+import TestApi from "./TestApi";
 
 export default function LoginPage() {
   const { Text } = Typography;
@@ -17,22 +18,26 @@ export default function LoginPage() {
     const loggedUser = localStorage.getItem("user");
     if (loggedUser) router.push("/home"); // Se já estiver logado, vai pra home
   }, []);
+  
 
-  const onFinish = (values: { email: string; password: string; }) => {
+  const onFinish = async (values: { email: string; password: string }) => {
     setLoading(true);
     setLoginError("");
-    const user = authenticateUser(values.email, values.password);
+  
+    const user = await authenticateUser(values.email, values.password);
+    
+    setLoading(false);
+    localStorage.setItem("user", JSON.stringify(user));
 
-    setTimeout(() => {
-      setLoading(false);
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user)); // Salva o usuário logado
-        router.push("/home"); // Redireciona para home
-      } else {
-        setLoginError("Usuário ou senha inválidos!");
-      }
-    }, 1000);
+  
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+      router.push("/home");
+    } else {
+      setLoginError("Usuário ou senha inválidos!");
+    }
   };
+  
 
   return (
     <div className={styles.container}>
@@ -40,7 +45,7 @@ export default function LoginPage() {
         <div className={styles.duo}>
           <div className={styles.left}>
             <div className={styles.divlogo}>
-              <Image className={styles.logo} src="images/logo.png" />
+              <Image className={styles.logo} src="images/logo.png" preview={false}/>
             </div>
             <Form form={form} layout="vertical" onFinish={onFinish}>
               <Form.Item label="E-mail" name="email" rules={[{ required: true, message: "Digite seu e-mail!" }]}>
@@ -67,6 +72,7 @@ export default function LoginPage() {
               <Text className={styles.textBtn}>Cadastre-se</Text>
             </Button>
           </div>
+
         </div>
       </Card>
     </div>
