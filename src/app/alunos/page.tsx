@@ -25,11 +25,11 @@ export default function AlunosPage() {
       try {
         const token = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")!).token : null;
         if (token) {
-          const response = await fetch("http://localhost:3000/users", {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`, // Adicionando o token no cabeçalho
+              "Authorization": `Bearer ${token}`, 
             },
           });
 

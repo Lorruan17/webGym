@@ -12,9 +12,10 @@ interface DecodedToken {
 
 export async function authenticateUser(email: string, password: string) {
   console.log("Função authenticateUser chamada com:", email, password);
+  console.log("URL da API que será usada:", `${process.env.NEXT_PUBLIC_API_URL}/auth/login`);
 
   try {
-    const response = await fetch("http://localhost:3000/auth/login", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

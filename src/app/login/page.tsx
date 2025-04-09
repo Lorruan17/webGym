@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Form, Input, Button, Card, Image, Typography } from "antd";
 import { authenticateUser } from "../utils/auth";
 import styles from "./login.module.css";
-import TestApi from "./TestApi";
 
 export default function LoginPage() {
   const { Text } = Typography;
@@ -18,18 +17,16 @@ export default function LoginPage() {
     const loggedUser = localStorage.getItem("user");
     if (loggedUser) router.push("/home"); // Se já estiver logado, vai pra home
   }, []);
-  
+
 
   const onFinish = async (values: { email: string; password: string }) => {
     setLoading(true);
     setLoginError("");
-  
-    const user = await authenticateUser(values.email, values.password);
-    
-    setLoading(false);
-    localStorage.setItem("user", JSON.stringify(user));
 
-  
+    const user = await authenticateUser(values.email, values.password);
+
+    setLoading(false);
+
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
       router.push("/home");
@@ -37,7 +34,10 @@ export default function LoginPage() {
       setLoginError("Usuário ou senha inválidos!");
     }
   };
-  
+
+  const regis = () => {
+    router.push("register")
+  }
 
   return (
     <div className={styles.container}>
@@ -45,9 +45,9 @@ export default function LoginPage() {
         <div className={styles.duo}>
           <div className={styles.left}>
             <div className={styles.divlogo}>
-              <Image className={styles.logo} src="images/logo.png" preview={false}/>
+              <Image className={styles.logo} src="images/logo.png" preview={false} />
             </div>
-            <Form form={form} layout="vertical" onFinish={onFinish}>
+            <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false}>
               <Form.Item label="E-mail" name="email" rules={[{ required: true, message: "Digite seu e-mail!" }]}>
                 <Input />
               </Form.Item>
@@ -68,9 +68,10 @@ export default function LoginPage() {
           <div className={styles.right}>
             <Image className={styles.image} src="images/tela.jpg" preview={false} />
             <Text>Não tem uma conta?</Text>
-            <Button className={styles.btn}>
+            <Button className={styles.btn} onClick={regis}>
               <Text className={styles.textBtn}>Cadastre-se</Text>
             </Button>
+           
           </div>
 
         </div>

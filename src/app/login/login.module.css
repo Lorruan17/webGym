@@ -53,7 +53,7 @@
 
 .btn:hover, 
 .btn:focus {
-  background-color: rgba(30, 30, 245, 0.9) !important; /* Mantém a cor semelhante ao estado normal */
+  background-color: rgb(62, 62, 192) !important; /* Mantém a cor semelhante ao estado normal */
   border: none ;
 }
 

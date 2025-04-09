@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Criando uma instância do axios com a base URL
 const api = axios.create({
-  baseURL: 'http://localhost:3000',  // Base URL da sua API
+  baseURL: process.env.NEXT_PUBLIC_API_URL,  // Base URL da sua API
   headers: {
     'Content-Type': 'application/json',
   },
