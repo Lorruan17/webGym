@@ -15,7 +15,7 @@ export default function LoginSmart() {
 
   useEffect(() => {
     const loggedUser = localStorage.getItem("user");
-    if (loggedUser) router.push("/home"); 
+    if (loggedUser) router.push("/user/app"); 
   }, []);
 
 
@@ -29,7 +29,7 @@ export default function LoginSmart() {
 
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
-      router.push("/home");
+      router.push("user/app");
     } else {
       setLoginError("Usuário ou senha inválidos!");
     }
