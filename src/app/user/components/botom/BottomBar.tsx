@@ -11,7 +11,7 @@ import styles from "./bottom.module.css";
 
 const navItems = [
   { key: "/user/app", label: "Início", icon: <HomeOutlined /> },
-  { key: "/user/agenda", label: "Treino", icon: <CalendarOutlined /> },
+  { key: "/user/treino", label: "Treino", icon: <CalendarOutlined /> },
   { key: "/user/progresso", label: "Dieta", icon: <BarChartOutlined /> },
   { key: "/user/perfil", label: "Perfil", icon: <UserOutlined /> },
 ];

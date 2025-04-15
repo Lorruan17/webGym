@@ -40,7 +40,6 @@ export default function PerfilPage() {
     router.push("/"); // Redireciona para a tela inicial
   };
 
-  // Função de editar perfil (não implementada)
   const handleEdit = () => {
     alert("Função de editar ainda não implementada!");
   };
@@ -65,6 +64,9 @@ export default function PerfilPage() {
         <div className={styles.buttonGroup}>
           <Button type="primary" onClick={handleEdit} block className={styles.btn}>
             Editar Perfil
+          </Button>
+          <Button type="primary" block className={styles.btn}>
+            Instalar o Aplicativo
           </Button>
           <Button danger onClick={showModal} block className={styles.btn}>
             Sair

@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import BottomBar from "../components/botom/BottomBar";
 import { Typography, Layout, Card, Modal, Input } from "antd";
 import styles from "./app.module.css";
+import Title from "antd/es/typography/Title";
+import { SlEnergy } from "react-icons/sl";
 
-const { Title, Paragraph } = Typography;
+
+const { Text, Paragraph } = Typography;
 const { Content } = Layout;
 
 export default function AppHome() {
@@ -22,7 +25,7 @@ export default function AppHome() {
     const alturaNum = parseFloat(altura.replace(/[^\d.]/g, ""));
     if (isNaN(pesoNum) || isNaN(alturaNum) || alturaNum === 0) return "N/A";
     const imc = pesoNum / (alturaNum * alturaNum);
-    console.log("pesoNum:", pesoNum, "alturaNum:", alturaNum, "imc:", imc); // Agora funciona
+    console.log("pesoNum:", pesoNum, "alturaNum:", alturaNum, "imc:", imc);
     return imc.toFixed(2);
   };
 
@@ -73,39 +76,46 @@ export default function AppHome() {
   }, []);
 
   return (
-    <Layout style={{ minHeight: "100vh", paddingBottom: 64 }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <Content className={styles.content}>
-        <Title level={2}>Bem-vindo{name ? `, ${name}` : ""}! 👋</Title>
-        <div className={styles.cardList}>
-          <Card className={styles.card} onClick={() => openModal("peso", peso.replace(" kg", ""))}>
-            <Title level={5}>Peso</Title>
-            <Paragraph>{peso}</Paragraph>
-          </Card>
+        <div className={styles.cont}>
+          <div style={{flexDirection: 'row', display: 'flex'}}>
+          <Title className={styles.font}>
+            Bem-vindo{name ? `, ${name}` : ""}!
+          </Title>
+          <SlEnergy className={styles.icon} />
+          </div>
+          <div className={styles.cardList}>
+            <Card className={styles.card} onClick={() => openModal("peso", peso.replace(" kg", ""))}>
+              <Text className={styles.sub} >Peso</Text>
+              <Paragraph className={styles.sub}>{peso}</Paragraph>
+            </Card>
 
-          <Card className={styles.card} onClick={() => openModal("altura", altura.replace(" m", ""))}>
-            <Title level={5}>Altura</Title>
-            <Paragraph>{altura}</Paragraph>
-          </Card>
+            <Card className={styles.card} onClick={() => openModal("altura", altura.replace(" m", ""))}>
+              <Text className={styles.sub} >Altura</Text>
+              <Paragraph className={styles.sub}>{altura}</Paragraph>
+            </Card>
 
-          <Card className={styles.card} onClick={() => openModal("objetivo", objetivo.replace(" kg", ""))}>
-            <Title level={5}>Objetivo</Title>
-            <Paragraph>{objetivo}</Paragraph>
-          </Card>
+            <Card className={styles.card} onClick={() => openModal("objetivo", objetivo.replace(" kg", ""))}>
+              <Text className={styles.sub} >Objetivo</Text>
+              <Paragraph className={styles.sub}>{objetivo}</Paragraph>
+            </Card>
 
-          <Card className={styles.card}>
-            <Title level={5}>IMC</Title>
-            <Paragraph>{imc}</Paragraph>
-          </Card>
+            <Card className={styles.card}>
+              <Text className={styles.sub} >IMC</Text>
+              <Paragraph className={styles.sub}>{imc}</Paragraph>
+            </Card>
 
-          <Card className={styles.cardStatus}>
-            <Title level={5}>Status de Saúde</Title>
-            <Paragraph strong style={{ color: "#1677ff" }}>
-              {imcStatus ? imcStatus.status : "IMC inválido"}
-            </Paragraph>
-            <Paragraph type="secondary">
-              {imcStatus ? imcStatus.message : "Preencha corretamente peso e altura para ver o status."}
-            </Paragraph>
-          </Card>
+            <Card className={styles.cardStatus}>
+              <Text className={styles.sub} >Status de Saúde</Text>
+              <Paragraph strong style={{ color: "#1677ff" }}>
+                {imcStatus ? imcStatus.status : "IMC inválido"}
+              </Paragraph>
+              <Paragraph type="secondary">
+                {imcStatus ? imcStatus.message : "Preencha corretamente peso e altura para ver o status."}
+              </Paragraph>
+            </Card>
+          </div>
         </div>
 
         <Modal

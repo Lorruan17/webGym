@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode"; // Correção aqui
 
 interface DecodedToken {
+  id: number
   name: string;
   email: string;
   roles: string[];
@@ -39,12 +40,12 @@ export async function authenticateUser(email: string, password: string) {
       const decoded = jwtDecode<DecodedToken>(data.token);
       console.log("Token decodificado:", decoded);
 
-      // Criando objeto de usuário com todos os dados
       const userData = {
         token: data.token,
+        id: decoded.id,
         name: decoded.name,
         email: decoded.email,
-        roles: decoded.roles, // Corrigido de "role" para "roles"
+        roles: decoded.roles, 
         parceira: decoded.parceira,
       };
 

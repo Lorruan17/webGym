@@ -1,0 +1,22 @@
+.container {
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+  }
+  
+  .title {
+    color: black;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .description {
+    font-size: 18px;
+    color: #444;
+  }
+  
+  .loading {
+    font-size: 20px;
+    color: gray;
+  }
+  

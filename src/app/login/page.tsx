@@ -15,7 +15,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     const loggedUser = localStorage.getItem("user");
-    if (loggedUser) router.push("/home"); // Se já estiver logado, vai pra home
+    if (loggedUser) router.push("/home"); 
   }, []);
 
 

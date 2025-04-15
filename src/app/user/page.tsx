@@ -14,8 +14,20 @@ export default function LoginSmart() {
   const router = useRouter();
 
   useEffect(() => {
-    const loggedUser = localStorage.getItem("user");
-    if (loggedUser) router.push("/user/app"); 
+    if (typeof window !== "undefined") {
+      const loggedUser = localStorage.getItem("user");
+      if (loggedUser) router.push("/user/app");
+    }
+  }, []);
+  
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/service-worker.js")
+        .then((reg) => console.log("SW registered", reg))
+        .catch((err) => console.error("SW registration failed", err));
+    }
   }, []);
 
 
@@ -29,7 +41,7 @@ export default function LoginSmart() {
 
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
-      router.push("user/app");
+      router.push("/user/app");
     } else {
       setLoginError("Usuário ou senha inválidos!");
     }
