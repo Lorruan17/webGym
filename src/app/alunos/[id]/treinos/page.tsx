@@ -1,17 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button, Table, Space, Input, Typography, Modal } from "antd";
+import { Button, Table, Space, Input, Typography, Modal, Select, SelectProps } from "antd";
 import { useRouter, useParams } from "next/navigation";
 import { DeleteOutlined } from "@ant-design/icons";
 import styles from "./treinos.module.css";
 import MainLayout from "@/app/sidebar/page";
 import { FixedSizeList as FlatList } from "react-window";
-import { getTreinos } from "@/app/utils/api"; // Removido getUserById
+import { getTreinos } from "@/app/utils/api";
 
 interface Exercicio {
   id: number;
   nome: string;
   descricao: string;
+}
+
+interface DiaConfig {
+  series?: number;
+  repeticoes?: number;
 }
 
 export default function AlunosPage() {
@@ -24,14 +29,22 @@ export default function AlunosPage() {
   const [modalVisible, setModalVisible] = useState(false);
   const [treinoSelecionado, setTreinoSelecionado] = useState<Exercicio | null>(null);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
+  const [diaConfigs, setDiaConfigs] = useState<Record<string, DiaConfig>>({});
 
-  const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+  const diasSemana: ("Segunda" | "Terça" | "Quarta" | "Quinta" | "Sexta" | "Sábado" | "Domingo")[] = [
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
+    "Domingo",
+  ];
 
   const router = useRouter();
   const params = useParams();
   const alunoId = Number(params.id);
 
-  // Buscar treinos e dados do usuário
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,12 +55,10 @@ export default function AlunosPage() {
         const token = parsedUser?.token;
         if (!token) throw new Error("Token não encontrado.");
 
-        // 1. Buscar todos os treinos
         const data = await getTreinos(token);
         setAlunos(data);
         setFilteredAlunos(data);
 
-        // 2. Buscar todos os usuários
         const response = await fetch("http://192.168.1.6:3000/users", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -71,30 +82,33 @@ export default function AlunosPage() {
     if (alunoId) fetchData();
   }, [alunoId]);
 
-
-  // Atualizar treinos por dia com base no usuário e treinos disponíveis
   useEffect(() => {
     if (usuario && alunos.length > 0) {
       const novoTreinosPorDia: Record<string, Exercicio[]> = {};
+      const novosDiaConfigs: Record<string, DiaConfig> = {};
       diasSemana.forEach((dia) => {
-        const chave = `${dia.slice(0, 3).toLowerCase()}_ex`;
-        const ids = usuario[chave] || [];
-        const idList = Array.isArray(ids)
-          ? ids.map((item: any) => (typeof item === "object" ? item.id : item))
-          : [];
+        const chaveEx = `${dia.slice(0, 3).toLowerCase()}_ex`;
+        const chaveSR = `${dia.slice(0, 3).toLowerCase()}_s_r`;
+        const ids = usuario[chaveEx] as number[] | undefined;
+        const srValues = usuario[chaveSR] as string[] | undefined;
+        const idList = Array.isArray(ids) ? ids : [];
 
-        novoTreinosPorDia[dia] = alunos.filter((t) => idList.includes(t.id));
+        novoTreinosPorDia[dia] = alunos.filter((t) => idList?.includes(t.id));
+        if (Array.isArray(srValues) && srValues.length === 2) {
+          novosDiaConfigs[dia] = { series: Number(srValues[0]), repeticoes: Number(srValues[1]) };
+        } else {
+          novosDiaConfigs[dia] = {};
+        }
       });
       setTreinosPorDia(novoTreinosPorDia);
+      setDiaConfigs(novosDiaConfigs);
     }
   }, [usuario, alunos]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     setSearchText(value);
-    const filtered = alunos.filter((a) =>
-      a.nome.toLowerCase().includes(value)
-    );
+    const filtered = alunos.filter((a) => a.nome.toLowerCase().includes(value));
     setFilteredAlunos(filtered);
   };
 
@@ -102,17 +116,27 @@ export default function AlunosPage() {
     if (treinoSelecionado) {
       setTreinosPorDia((prev) => ({
         ...prev,
-        [dia]: [...prev[dia], treinoSelecionado],
+        [dia]: [...(prev[dia] || []), treinoSelecionado],
       }));
       setModalVisible(false);
       setTreinoSelecionado(null);
     }
   };
 
-  const removerTreinoDoDia = (dia: string, index: number) => {
-    const novos = { ...treinosPorDia };
-    novos[dia].splice(index, 1);
-    setTreinosPorDia(novos);
+  const removerTreinoDoDia = (dia: string, treinoId: number) => {
+    const novosTreinos = { ...treinosPorDia };
+    novosTreinos[dia] = novosTreinos[dia].filter((t) => t.id !== treinoId);
+    setTreinosPorDia(novosTreinos);
+  };
+
+  const handleDiaConfigChange = (dia: string, type: "series" | "repeticoes", value: SelectProps['value']) => {
+    setDiaConfigs((prev) => ({
+      ...prev,
+      [dia]: {
+        ...prev[dia],
+        [type]: value ? Number(value as string) : undefined,
+      },
+    }));
   };
 
   const handleConfirmSave = async () => {
@@ -124,15 +148,36 @@ export default function AlunosPage() {
       const token = parsedUser?.token;
       if (!token) throw new Error("Token não encontrado.");
 
-      const body: Record<string, number[]> = {};
+      const body: Record<string, any> = {};
+      const treinosBody: Record<string, number[]> = {};
+      const srBody: Record<string, (number | undefined | null)[]> = {}; // Tipo alterado aqui
+
       diasSemana.forEach((dia) => {
-        const chave = `${dia.slice(0, 3).toLowerCase()}_ex`;
-        body[chave] = treinosPorDia[dia].map((t) => t.id);
+        const chaveExercicio = `${dia.slice(0, 3).toLowerCase()}_ex`;
+        const chaveSeriesRepeticoes = `${dia.slice(0, 3).toLowerCase()}_s_r`;
+
+        const treinosDoDia = treinosPorDia[dia] || [];
+        treinosBody[chaveExercicio] = treinosDoDia.map((t) => t.id);
+
+        if (treinosDoDia.length > 0) {
+          const series = diaConfigs[dia]?.series;
+          const repeticoes = diaConfigs[dia]?.repeticoes;
+          srBody[chaveSeriesRepeticoes] = [series, repeticoes].filter(val => val !== undefined);
+          if (srBody[chaveSeriesRepeticoes].length === 0 && (series !== undefined || repeticoes !== undefined)) {
+            srBody[chaveSeriesRepeticoes] = [null]; // Agora isso é permitido pelo tipo
+          } else if (srBody[chaveSeriesRepeticoes].length === 0) {
+            delete body[chaveSeriesRepeticoes]; // Não incluir a chave se não houver valores
+          }
+        } else {
+          delete body[chaveSeriesRepeticoes]; // Não incluir a chave se não houver treinos
+        }
       });
+
+      const finalBody = { ...treinosBody, ...srBody };
 
       console.log("URL:", `http://192.168.1.6:3000/users/${usuario.id}`);
       console.log("Token:", token);
-      console.log("Body:", JSON.stringify(body, null, 2));
+      console.log("Body:", JSON.stringify(finalBody, null, 2));
 
       const response = await fetch(`http://192.168.1.6:3000/users/${usuario.id}`, {
         method: "PUT",
@@ -140,13 +185,13 @@ export default function AlunosPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(finalBody),
       });
 
       if (response.ok) {
         Modal.success({
           title: "Sucesso",
-          content: "Treinos atualizados com sucesso!",
+          content: "Treinos e configurações atualizados com sucesso!",
         });
       } else {
         const erro = await response.json();
@@ -251,16 +296,70 @@ export default function AlunosPage() {
                 borderRadius: 8,
                 padding: 16,
                 background: "#fafafa",
+                flexDirection: 'column',
+                display: 'flex'
               }}
             >
               <Text strong style={{ fontSize: 16 }}>
                 {dia}
               </Text>
+
+              <div className={styles.divSel}>
+                <Select
+                  className={styles.sel}
+                  placeholder="Séries"
+                  value={diaConfigs[dia]?.series}
+                  onChange={(value) => handleDiaConfigChange(dia, "series", value)}
+                  options={[
+                    { value: null, label: 'Nenhum' },
+                    { value: '1', label: '1x' },
+                    { value: '2', label: '2x' },
+                    { value: '3', label: '3x' },
+                    { value: '4', label: '4x' },
+                    { value: '5', label: '5x' },
+                    { value: '6', label: '6x' },
+                    { value: '7', label: '7x' },
+                    { value: '8', label: '8x' },
+                    { value: '9', label: '9x' },
+                    { value: '10', label: '10x' },
+                  ]}
+                />
+                <Select
+                  className={styles.sel}
+                  placeholder="Repetições"
+                  value={diaConfigs[dia]?.repeticoes}
+                  onChange={(value) => handleDiaConfigChange(dia, "repeticoes", value)}
+                  options={[
+                    { value: null, label: 'Nenhum' },
+                    { value: '6', label: '6 reps' },
+                    { value: '7', label: '7 reps' },
+                    { value: '8', label: '8 reps' },
+                    { value: '9', label: '9 reps' },
+                    { value: '10', label: '10 reps' },
+                    { value: '11', label: '11 reps' },
+                    { value: '12', label: '12 reps' },
+                    { value: '13', label: '13 reps' },
+                    { value: '14', label: '14 reps' },
+                    { value: '15', label: '15 reps' },
+                    { value: '16', label: '16 reps' },
+                    { value: '17', label: '17 reps' },
+                    { value: '18', label: '18 reps' },
+                    { value: '19', label: '19 reps' },
+                    { value: '20', label: '20 reps' },
+                    { value: '21', label: '21 reps' },
+                    { value: '22', label: '22 reps' },
+                    { value: '23', label: '23 reps' },
+                    { value: '24', label: '24 reps' },
+                    { value: '25', label: '25 reps' },
+                  ]}
+                />
+              </div>
+
               {treinosPorDia[dia]?.length > 0 ? (
                 <ul style={{ paddingLeft: 20, marginTop: 8 }}>
-                  {treinosPorDia[dia].map((treino, index) => (
+                  {treinosPorDia[dia].map((treino) => (
                     <li
-                      key={index}
+                      key={treino.id}
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
@@ -285,7 +384,7 @@ export default function AlunosPage() {
                         danger
                         size="small"
                         icon={<DeleteOutlined />}
-                        onClick={() => removerTreinoDoDia(dia, index)}
+                        onClick={() => removerTreinoDoDia(dia, treino.id)}
                       />
                     </li>
                   ))}
@@ -325,7 +424,7 @@ export default function AlunosPage() {
         className={styles.modal}
       >
         <Space direction="vertical" style={{ width: "100%" }}>
-          {diasSemana.map((dia) => (
+        {diasSemana.map((dia) => (
             <Button key={dia} onClick={() => adicionarTreinoAoDia(dia)} block>
               {dia}
             </Button>
