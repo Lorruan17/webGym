@@ -1,0 +1,106 @@
+.container {
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title {
+    margin-bottom: 24px;
+    font-size: 28px;
+    color: #2c3e50;
+    font-weight: 600;
+    text-align: center;
+}
+
+.user {
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #555;
+}
+
+.dietaPreview {
+    margin-top: 30px;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.card {
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+    border-radius: 16px;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card strong {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.card p {
+    margin: 5px 0;
+    color: #444;
+    font-size: 15px;
+}
+
+.button {
+    margin-top: 30px;
+    padding: 12px 24px;
+    background: linear-gradient(to right, #1e88e5, #42a5f5);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button:hover {
+    background: linear-gradient(to right, #1565c0, #1e88e5);
+}
+
+.modalContent {
+    background: #f9f9f9;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.modalSection {
+    margin-bottom: 24px;
+}
+
+.modalSection strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.modalSection input,
+.modalSection textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    transition: border 0.3s ease;
+}
+
+.modalSection input:focus,
+.modalSection textarea:focus {
+    border-color: #1e88e5;
+    outline: none;
+}

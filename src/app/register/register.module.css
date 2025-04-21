@@ -1,0 +1,70 @@
+/* user.module.css */
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #edf3fc;
+    padding: 20px;
+  }
+  
+  .card {
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+  }
+  
+  /* Logo centralizada */
+  .divlogo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .logo {
+    width: 100px;
+  }
+  
+  /* Botões */
+  .btn {
+    background-color: rgb(62, 62, 192);
+    color: white;
+    border: none;
+  }
+  
+  .btn:hover,
+  .btn:focus {
+    background-color: rgba(30, 30, 245, 0.9) !important;
+    border: none;
+  }
+  
+  .textBtn {
+    color: white;
+  }
+  
+  /* Seção de cadastro/login alternativo */
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  /* Responsividade extra para telas grandes */
+  @media (min-width: 768px) {
+    .card {
+      max-width: 500px;
+      padding: 32px;
+    }
+  
+    .logo {
+      width: 120px;
+    }
+  }
+  

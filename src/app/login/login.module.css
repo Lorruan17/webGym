@@ -1,0 +1,68 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #edf3fc;
+}
+
+.card {
+  width: 100%;
+  max-width: 600px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.duo{
+  flex-direction: row;
+  display: flex;
+  gap: 15px;
+}
+
+.left{
+  width: 50%;
+}
+
+.right{
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  display: flex;
+  gap: 10px;
+}
+
+.image{
+  max-width: 250px !important;
+}
+
+.textBtn{
+  color: white;
+}
+
+.btn{
+  background-color: rgb(62, 62, 192);
+}
+
+.btn:hover, 
+.btn:focus {
+  background-color: rgb(62, 62, 192) !important; /* Mantém a cor semelhante ao estado normal */
+  border: none ;
+}
+
+.logo{
+  width: 100px !important;
+}
+.divlogo{
+  justify-content: center !important;
+  width: 100% !important;
+  align-items: center !important;
+  display: flex;
+}

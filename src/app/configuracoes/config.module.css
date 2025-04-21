@@ -1,0 +1,38 @@
+/* config.module.css */
+.container {
+    padding: 24px;
+  }
+  
+  .title {
+    margin-bottom: 32px;
+    color: #333;
+  }
+  
+  .card {
+    margin-bottom: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e6e6e6;
+  }
+  
+  .buttonPrimary {
+    background-color: #1890ff;
+    color: white;
+    border-radius: 6px;
+  }
+  
+  .buttonPrimary:hover {
+    background-color: #40a9ff;
+  }
+  
+  .buttonDanger {
+    background-color: #ff4d4f;
+    color: white;
+    border-radius: 6px;
+  }
+  
+  .buttonDanger:hover {
+    background-color: #ff7875;
+  }
+  
+  /* Você pode adicionar mais estilos conforme necessário */

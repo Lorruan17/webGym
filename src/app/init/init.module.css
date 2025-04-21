@@ -1,0 +1,26 @@
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #edf3fc;
+}
+
+.card {
+  padding: 2rem;
+  text-align: center;
+  width: 90%;
+  border-radius: 30px;
+  max-width: 400px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.color{
+  background-color: rgb(62, 62, 192) !important;
+}

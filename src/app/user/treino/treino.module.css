@@ -1,0 +1,81 @@
+.container {
+  
+  background-image: url('/images/fundo.jpg') !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100%;
+}
+
+.dayContainer {
+  display: grid;
+  grid-template-rows: repeat(7, auto);
+}
+
+.dayCard {
+  width: 100% !important;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  background: #edf3fc;
+  display: flex;
+  margin-top: 200px;
+  flex-direction: column;
+  min-height: 100vh;
+  border-top-right-radius: 180px;
+}
+
+.dayTitle {
+  font-size: 25px !important;
+  font-weight: bold;
+}
+
+.trainList {
+  padding-left: 20px;
+  margin-top: 8px;
+  color: black;
+}
+
+.trainItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.trainDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #105fc5;
+}
+
+.exerciseList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  width: 80%;
+}
+
+.exerciseCard {
+  padding: 20px;
+  background-color: #6b96d6;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.exerciseCard:hover {
+  background-color: #6b96d6;
+  border-color: #91d5ff;
+  flex-direction: column !important;
+  display: flex !important;
+}
+
+.treinoTitle{
+  color: #fff;
+  font-size: 20;
+}

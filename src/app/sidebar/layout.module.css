@@ -1,0 +1,71 @@
+/* Estilos gerais do layout */
+.logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    background: rgb(255, 255, 255);
+    margin-bottom: 10px;
+    border-top-left-radius: 10px;
+}
+
+.header {
+    background-color: #ededed;
+    color: black;
+    padding: 0 20px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.content {
+    padding: 20px;
+    background: #ededed;
+    min-height: calc(100vh - 64px);
+}
+
+.img {
+    width: 60px !important;
+}
+
+.container {
+    display: flex !important;
+    border-top-left-radius: 30px;
+    margin: 10px !important;
+    background-color: white !important;
+}
+
+.sider {
+    border-right: 2px solid #d9d9d9;
+}
+
+
+/* Estiliza o botão de colapsar no topo */
+.sider .ant-layout-sider-trigger {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background-color: #001529 !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+/* Efeito ao passar o mouse */
+.sider .ant-layout-sider-trigger:hover {
+    background-color: #002140 !important;
+}
+
+.toggleBtn {
+    background: none;
+    border: none;
+    font-size: 18px !important;
+    cursor: pointer;
+}
+
+.toggleBtn:hover {
+    color: #1890ff !important;
+}

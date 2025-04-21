@@ -1,0 +1,96 @@
+/* perfil.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  padding-bottom: 80px;
+  margin: 0 auto;
+  background-color: #edf3fc;
+  flex: 1;
+  height: 100vh !important;
+  width: 100%;
+}
+
+.card {
+  width: 90%;
+  max-width: 400px;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.buttonGroup {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px !important;
+}
+
+.btn {
+  width: 100% !important;
+  border-radius: 8px !important;
+  font-size: 16px;
+  padding: 12px 24px !important;
+}
+
+.editBtn {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.editBtn:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.installBtn {
+  background-color: #52c41a;
+  border-color: #52c41a;
+}
+
+.installBtn:hover {
+  background-color: #73d13d;
+  border-color: #73d13d;
+}
+
+.logoutBtn {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.logoutBtn:hover {
+  background-color: #ff7875;
+  border-color: #ff7875;
+}
+
+.modal .ant-modal-content {
+  border-radius: 16px;
+}
+
+.uploadButton {
+  margin-top: 8px;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.uploadButton:hover {
+  border-color: #40a9ff;
+  color: #40a9ff;
+}

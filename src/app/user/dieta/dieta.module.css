@@ -1,0 +1,57 @@
+/* dieta.module.css */
+.container {
+  padding: 20px;
+  padding-bottom: 80px; /* espaço pro BottomBar */
+  font-family: Arial, sans-serif;
+  background-color: #edf3fc; /* Um fundo cinza bem claro e suave */
+  min-height: 100vh;
+}
+
+.pageTitle {
+  font-size: 28px !important;
+  margin-bottom: 30px !important;
+  color: #3a3a3a; /* Um tom de cinza mais escuro e suave */
+  text-align: center;
+  font-weight: 500;
+}
+
+.refeicaoItem {
+  background-color: #fff;
+  border-radius: 16px; /* Bordas mais arredondadas */
+  padding: 20px; /* Aumentei o padding interno */
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra suave */
+  border: 1px solid #e0e0e0;
+}
+
+.refeicaoHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.refeicaoIcon {
+  font-size: 24px;
+  margin-right: 12px;
+  color: #5cb85c; /* Um verde agradável para os ícones */
+}
+
+.refeicaoTitulo {
+  font-size: 20px !important;
+  color: #333;
+  margin-bottom: 0 !important;
+  font-weight: 500;
+}
+
+.refeicaoItem p {
+  margin: 8px 0 !important;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6; /* Melhora a legibilidade */
+}
+
+.refeicaoItem p strong {
+  color: #333;
+  margin-right: 8px;
+  font-weight: 600;
+}

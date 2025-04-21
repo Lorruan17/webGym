@@ -1,0 +1,73 @@
+.content {
+  background-image: url('/images/fundo.jpg') !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.title {
+  margin: 20px;
+}
+
+.cont {
+  background-color: #edf3fc;
+  padding: 15px;
+  border-top-right-radius: 100px;
+  padding-bottom: 80px;
+  margin-top: 200px;
+  width: 100%;
+  padding-top: 30px;
+}
+
+.card {
+  width: 100%;
+  border-radius: 25px;
+  text-align: left;
+  background-color: #6b96d6;
+  cursor: pointer;
+  height: 100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+.sub {
+  color: #fff !important;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.cardStatus {
+  width: 100%;
+  border-radius: 12px;
+  text-align: left;
+  background-color: #a9cef0;
+  /* verde suave */
+  cursor: default;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+}
+
+
+
+.font{
+  font-size: 25px !important;
+}
+
+.icon{
+  font-size: 30px;
+  margin-left: 20px;
+  color: #f1ef58;
+}

@@ -1,0 +1,126 @@
+/* Adicionando estilo para o container geral da página */
+.container {
+  padding: 20px;
+}
+
+/* Estilo para a tabela */
+.ant-table {
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para o cabeçalho da tabela */
+.ant-table-thead>tr>th {
+  background-color: #f4f4f9;
+  color: #333;
+  font-weight: 600;
+  text-align: center;
+  padding: 15px;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Estilo para as células da tabela */
+.ant-table-tbody>tr>td {
+  text-align: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+/* Efeito hover nas linhas da tabela */
+.ant-table-tbody>tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Estilo para os botões na tabela */
+.ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.ant-btn-default {
+  background-color: #f0f0f0;
+  border-color: #d9d9d9;
+}
+
+.ant-btn-default:hover {
+  background-color: #e6f7ff;
+  border-color: #91d5ff;
+}
+
+/* Estilo para o campo de pesquisa (Input) */
+.ant-input {
+  border-radius: 5px;
+  border: 1px solid #d9d9d9;
+  padding: 10px;
+  font-size: 14px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.ant-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.ant-table-pagination {
+  text-align: right;
+  padding: 10px 20px;
+}
+
+.ant-pagination-item {
+  border-radius: 50%;
+}
+
+.ant-pagination-item-active {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.ant-pagination-item-link {
+  border-radius: 50%;
+}
+
+.input {
+  height: 45px !important;
+  border-radius: 20px !important;
+}
+
+.flat{
+  margin-top: 20px;
+}
+
+.flat::-webkit-scrollbar {
+  width: 10px;
+}
+
+.flat::-webkit-scrollbar-track {
+  background: #dadada; 
+  border-radius: 10px;
+}
+
+.flat::-webkit-scrollbar-thumb {
+  background: #aaaaaa; 
+  border-radius: 10px;
+}
+
+.flat::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.btn{
+  border-radius: 15px;
+  background-color: #105fc5;
+}
+
+.btnText{
+  color: white !important;
+}

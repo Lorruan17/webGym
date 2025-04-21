@@ -1,0 +1,39 @@
+/* home.module.css */
+.container {
+  padding: 24px;
+}
+
+.card {
+  margin-bottom: 32px; /* Ajustei para corresponder ao componente */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ant-card-head-title {
+  font-weight: 500;
+}
+
+.statistic {
+  font-size: 1.5em; /* Ajustei para corresponder ao componente */
+  font-weight: 600; /* Ajustei para corresponder ao componente */
+  margin-bottom: 8px; /* Ajustei para corresponder ao componente */
+}
+
+/* Estilos adicionais para o tooltip, se você os manteve (não estão sendo usados agora) */
+.customTooltip {
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.customTooltip .label {
+  margin: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.customTooltip .intro {
+  margin: 5px 0;
+  color: #666;
+}
