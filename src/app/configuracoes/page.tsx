@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Layout, Card, Typography, Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined, BugOutlined, BulbOutlined } from "@ant-design/icons";
-import MainLayout from "../sidebar/page";
+import MainLayout from "../sidebar/layout";
 import styles from "./config.module.css"; // Importe o arquivo de estilos
 
 const { Title } = Typography;

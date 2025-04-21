@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button, Table, Space, Input, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import styles from "./alunos.module.css"; // Arquivo de estilos
-import MainLayout from "../sidebar/page";
+import MainLayout from "../sidebar/layout";
 import { FixedSizeList as FlatList } from "react-window";
 
 interface Aluno {

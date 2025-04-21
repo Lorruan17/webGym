@@ -4,7 +4,7 @@ import { Button, Table, Space, Input, Typography, Modal, Select, SelectProps } f
 import { useRouter, useParams } from "next/navigation";
 import { DeleteOutlined } from "@ant-design/icons";
 import styles from "./treinos.module.css";
-import MainLayout from "@/app/sidebar/page";
+import MainLayout from "@/app/sidebar/layout";
 import { FixedSizeList as FlatList } from "react-window";
 import { getTreinos } from "@/app/utils/api";
 

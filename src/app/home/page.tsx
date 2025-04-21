@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Layout, Card, Statistic, Typography, Divider } from "antd";
 import { UsergroupAddOutlined } from "@ant-design/icons";
 import styles from "./home.module.css";
-import MainLayout from "../sidebar/page";
+import MainLayout from "../sidebar/layout";
 
 const { Title, Paragraph, Text } = Typography;
 

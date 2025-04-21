@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from "next/navigation";
 import styles from './dieta.module.css';
-import MainLayout from '@/app/sidebar/page';
+import MainLayout from '@/app/sidebar/layout';
 import { Modal, Typography, Input, TimePicker } from 'antd';
 import dayjs from 'dayjs';
 
