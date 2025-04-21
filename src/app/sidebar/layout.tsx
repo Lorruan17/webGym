@@ -11,7 +11,7 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from "@ant-design/icons";
-import styles from "./side.module.css";
+import styles from "./layout.module.css";
 
 const { Header, Sider, Content } = Layout;
 
