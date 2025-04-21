@@ -1,60 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Form, Input, Button, Card, Typography, Select } from "antd";
 import styles from "./register.module.css";
-
-interface Academia {
-  id: number;
-  nome: string;
-  valor: number; // Assuming your Academia interface has a 'valor' property
-}
 
 export default function RegisterUser() {
   const { Title, Text } = Typography;
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [academies, setAcademies] = useState<Academia[]>([]);
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchAcademies = async () => {
-      try {
-        const res = await fetch("http://192.168.1.6:3000/academia");
-        if (res.ok) {
-          const data = await res.json();
-          setAcademies(data);
-        } else {
-          const errorData = await res.json();
-          alert(errorData.message || "Erro ao carregar academias.");
-        }
-      } catch (error) {
-        console.error("Erro ao buscar academias:", error);
-        alert("Erro de conexão ao buscar academias.");
-      }
-    };
-
-    fetchAcademies();
-  }, []);
 
   const onFinish = async (values: any) => {
     setLoading(true);
 
-    // Find the selected academy object based on its ID
-    const selectedAcademia = academies.find((academia) => academia.id === values.parceira);
-
-    let academiaValorToSend: number | undefined;
-    if (selectedAcademia) {
-      academiaValorToSend = selectedAcademia.valor;
-    } else {
-      alert("Academia selecionada inválida.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const res = await fetch("http://192.168.1.6:3000/users", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +24,7 @@ export default function RegisterUser() {
           username: values.name,
           email: values.email,
           password: values.password,
-          parceira: academiaValorToSend, // Send the 'valor' instead of the ID
+          parceira: values.parceira, // <-- novo campo aqui
         }),
       });
 
@@ -124,14 +85,12 @@ export default function RegisterUser() {
             <Input.Password />
           </Form.Item>
 
-          {/* Campo parceira (agora buscando da API) */}
+          {/* Campo parceira */}
           <Form.Item name="parceira" label="Academia" rules={[{ required: true, message: "Selecione uma academia!" }]}>
             <Select placeholder="Selecione uma academia">
-              {academies.map((academia) => (
-                <Select.Option key={academia.id} value={academia.id}> 
-                  {academia.nome}
-                </Select.Option>
-              ))}
+              <Select.Option value={1}>Academia Alpha</Select.Option>
+              <Select.Option value={2}>Academia Beta</Select.Option>
+              <Select.Option value={3}>Academia StrongFit</Select.Option>
             </Select>
           </Form.Item>
 

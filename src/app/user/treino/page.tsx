@@ -55,7 +55,7 @@ export default function UsuarioPage() {
         setAlunos(data);
         setFilteredAlunos(data);
 
-        const response = await fetch(`http://192.168.1.6:3000/users/${alunoId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${alunoId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

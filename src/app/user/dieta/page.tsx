@@ -46,7 +46,7 @@ export default function DietaPage() {
 
     if (!token || !id) return;
 
-    fetch(`http://192.168.1.6:3000/users/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

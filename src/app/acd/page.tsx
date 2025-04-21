@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './acd.module.css';
 
-const API_URL = 'http://192.168.1.6:3000/academia'; // Use 'academies' no plural
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/academia`; // Use 'academies' no plural
 
 interface User {
     id: number;

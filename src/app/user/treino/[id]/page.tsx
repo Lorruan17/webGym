@@ -20,7 +20,7 @@ export default function TreinoDetalhe() {
       if (!token) return;
 
       try {
-        const response = await fetch(`http://192.168.1.6:3000/treino/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/treino/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -45,7 +45,7 @@ export default function TreinoDetalhe() {
       if (!token || !userId) return;
   
       try {
-        const response = await fetch(`http://192.168.1.6:3000/users/${userId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
   

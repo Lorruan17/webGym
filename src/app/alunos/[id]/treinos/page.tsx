@@ -59,7 +59,7 @@ export default function AlunosPage() {
         setAlunos(data);
         setFilteredAlunos(data);
 
-        const response = await fetch("http://192.168.1.6:3000/users", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -175,11 +175,8 @@ export default function AlunosPage() {
 
       const finalBody = { ...treinosBody, ...srBody };
 
-      console.log("URL:", `http://192.168.1.6:3000/users/${usuario.id}`);
-      console.log("Token:", token);
-      console.log("Body:", JSON.stringify(finalBody, null, 2));
 
-      const response = await fetch(`http://192.168.1.6:3000/users/${usuario.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${usuario.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -48,7 +48,7 @@ const Dieta = () => {
 
             if (!token) throw new Error("Token não encontrado.");
 
-            const response = await fetch(`http://192.168.1.6:3000/users/${id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -95,7 +95,7 @@ const Dieta = () => {
 
             if (!token) throw new Error("Token não encontrado.");
 
-            const response = await fetch(`http://192.168.1.6:3000/users/${id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
