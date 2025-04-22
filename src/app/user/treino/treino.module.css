@@ -77,5 +77,14 @@
 
 .treinoTitle{
   color: #fff;
-  font-size: 20;
+  font-size: 20px !important;
+}
+
+.btnn{
+  margin-bottom: 10px;
+  margin-left: 10px;
+  height: 30px;
+  border-radius: 11px;
+  background-color: #91c0ec !important;
+  color: #fff !important;
 }

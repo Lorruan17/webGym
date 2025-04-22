@@ -1,4 +1,5 @@
-import { jwtDecode } from "jwt-decode"; // Correção aqui
+// auth.ts
+import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
   id: number
@@ -10,6 +11,41 @@ interface DecodedToken {
   iat: number;
   exp: number;
 }
+
+export const getUser = (): any => {
+  if (typeof window !== "undefined") {
+    const userStr = localStorage.getItem("user");
+    return userStr ? JSON.parse(userStr) : null;
+  }
+  return null;
+};
+
+export const getAccessToken = (): string | null => {
+  const user = getUser();
+  return user?.token || null;
+};
+
+export const getRefreshToken = (): string | null => {
+  const user = getUser();
+  return user?.refreshToken || null;
+};
+
+export const setAuthTokensInUser = (accessToken: string, refreshToken?: string) => {
+  if (typeof window !== "undefined") {
+    const user = getUser() || {};
+    user.token = accessToken;
+    if (refreshToken) {
+      user.refreshToken = refreshToken;
+    }
+    localStorage.setItem("user", JSON.stringify(user));
+  }
+};
+
+export const clearAuthTokens = () => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("user");
+  }
+};
 
 export async function authenticateUser(email: string, password: string) {
   console.log("Função authenticateUser chamada com:", email, password);
@@ -36,27 +72,25 @@ export async function authenticateUser(email: string, password: string) {
     console.log("Resposta da API (parseada):", data);
 
     try {
-      // Decodificando o token JWT
       const decoded = jwtDecode<DecodedToken>(data.token);
       console.log("Token decodificado:", decoded);
 
       const userData = {
         token: data.token,
+        refreshToken: data.refreshToken, // Assumindo que a API retorna refreshToken
         id: decoded.id,
         name: decoded.name,
         email: decoded.email,
-        roles: decoded.roles, 
+        roles: decoded.roles,
         parceira: decoded.parceira,
       };
 
       console.log("Dados do usuário:", userData);
 
-      // Verificando se o localStorage está disponível
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(userData));
         console.log("Usuário salvo no localStorage:", userData);
 
-        // Verificação: pegando o usuário do localStorage e exibindo
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
           console.log("Verificação do localStorage (parseado):", JSON.parse(savedUser));

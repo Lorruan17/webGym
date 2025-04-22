@@ -1,10 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Typography } from "antd";
+import { useEffect, useState, useCallback } from "react";
+import { Typography, Button } from "antd";
+import { SyncOutlined } from "@ant-design/icons";
 import BottomBar from "../components/botom/BottomBar";
 import styles from "./treino.module.css";
 import { getTreinos } from "@/app/utils/api";
 import { useRouter } from "next/navigation";
+import { getAccessToken } from "@/app/utils/auth";
 
 interface Exercicio {
   id: number;
@@ -12,11 +14,9 @@ interface Exercicio {
   descricao: string;
 }
 
-export default function UsuarioPage() {
+export default function Treinos() {
   const [alunos, setAlunos] = useState<Exercicio[]>([]);
-  const [filteredAlunos, setFilteredAlunos] = useState<Exercicio[]>([]);
   const [loading, setLoading] = useState(false);
-  const [usuario, setUsuario] = useState<any>(null);
   const [treinosPorDia, setTreinosPorDia] = useState<Record<string, Exercicio[]>>({});
 
   const router = useRouter();
@@ -40,57 +40,72 @@ export default function UsuarioPage() {
     5: "sáb_ex",
   } as const;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!alunoId) throw new Error("Aluno não encontrado no localStorage.");
-        setLoading(true);
-
-        const user = localStorage.getItem("user");
-        const parsedUser = user ? JSON.parse(user) : null;
-        const token = parsedUser?.token;
-        if (!token) throw new Error("Token não encontrado.");
-
-        const data = await getTreinos(token);
-        setAlunos(data);
-        setFilteredAlunos(data);
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${alunoId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) throw new Error("Erro ao buscar usuário");
-        const usuarioData = await response.json();
-        if (!usuarioData) throw new Error("Usuário não encontrado.");
-
-        setUsuario(usuarioData);
-      } catch (error) {
-        console.error("Erro ao buscar os dados:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+  const salvarTreinosLocalmente = useCallback((treinos: Record<string, Exercicio[]>) => {
+    if (alunoId) {
+      localStorage.setItem(`treinos-${alunoId}`, JSON.stringify(treinos));
+    }
   }, [alunoId]);
 
-  useEffect(() => {
-    if (usuario && alunos.length > 0) {
-      const novoTreinosPorDia: Record<string, Exercicio[]> = {};
-      diasSemana.forEach((dia) => {
-        const chave = mapDia[diasSemana.indexOf(dia) as keyof typeof mapDia];
-        const ids = usuario[chave] || [];
-        const idList = Array.isArray(ids)
-          ? ids.map((item: any) => (typeof item === "object" ? item.id : item))
-          : [];
-
-        novoTreinosPorDia[dia] = alunos.filter((t) => idList.includes(t.id));
-      });
-      setTreinosPorDia(novoTreinosPorDia);
+  const carregarTreinosLocalmente = useCallback(() => {
+    if (alunoId) {
+      const treinosSalvos = localStorage.getItem(`treinos-${alunoId}`);
+      if (treinosSalvos) {
+        try {
+          setTreinosPorDia(JSON.parse(treinosSalvos));
+          return true;
+        } catch (error) {
+          console.error("Erro ao parsear treinos do localStorage:", error);
+          return false;
+        }
+      }
     }
-  }, [usuario, alunos]);
+    return false;
+  }, [alunoId]);
+
+  const fetchTreinosDoServidor = useCallback(async () => {
+    try {
+      if (!alunoId) throw new Error("Aluno não encontrado no localStorage.");
+      setLoading(true);
+
+      const token = getAccessToken();
+      if (!token) throw new Error("Token não encontrado.");
+
+      const data = await getTreinos(); // Busca todos os treinos do usuário
+      setAlunos(data);
+    } catch (error) {
+      console.error("Erro ao buscar os treinos:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [alunoId, getTreinos]);
+
+  useEffect(() => {
+    if (!carregarTreinosLocalmente()) {
+      fetchTreinosDoServidor();
+    }
+  }, [carregarTreinosLocalmente, fetchTreinosDoServidor]);
+
+  useEffect(() => {
+    if (alunos.length > 0 && alunoId) {
+      const novoTreinosPorDia: Record<string, Exercicio[]> = {};
+      const userStr = localStorage.getItem("user");
+      const usuario = userStr ? JSON.parse(userStr) : null;
+
+      if (usuario) {
+        diasSemana.forEach((dia) => {
+          const chave = mapDia[diasSemana.indexOf(dia) as keyof typeof mapDia];
+          const ids = usuario[chave] || [];
+          const idList = Array.isArray(ids)
+            ? ids.map((item: any) => (typeof item === "object" ? item.id : item))
+            : [];
+
+          novoTreinosPorDia[dia] = alunos.filter((t) => idList.includes(t.id));
+        });
+        setTreinosPorDia(novoTreinosPorDia);
+        salvarTreinosLocalmente(novoTreinosPorDia);
+      }
+    }
+  }, [alunos, alunoId, salvarTreinosLocalmente]);
 
   const { Title, Text } = Typography;
 
@@ -107,7 +122,12 @@ export default function UsuarioPage() {
     <div className={styles.container}>
       <div className={styles.dayContainer}>
         <div className={styles.dayCard}>
-          <Title className={styles.dayTitle}>Meus Treinos</Title>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <Title className={styles.dayTitle}>Meus Treinos</Title>
+            <Button onClick={fetchTreinosDoServidor} loading={loading} size="small" icon={<SyncOutlined />} className={styles.btnn}>
+              Atualizar
+            </Button>
+          </div>
 
           {treinosPorDia[diaAtualStr]?.length > 0 ? (
             <div className={styles.exerciseList}>
@@ -125,7 +145,7 @@ export default function UsuarioPage() {
             </div>
           ) : (
             <Text type="secondary" style={{ marginLeft: 10 }}>
-              Nenhum treino adicionado.
+              Nenhum treino para {diaAtualStr}.
             </Text>
           )}
         </div>

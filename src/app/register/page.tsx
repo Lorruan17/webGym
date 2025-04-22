@@ -1,15 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Form, Input, Button, Card, Typography, Select } from "antd";
 import styles from "./register.module.css";
+
+interface Academia {
+  id: number;
+  nome: string;
+  valor: string;
+}
 
 export default function RegisterUser() {
   const { Title, Text } = Typography;
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [academies, setAcademies] = useState<Academia[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchAcademies = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/academia`);
+        if (res.ok) {
+          const data: Academia[] = await res.json();
+          setAcademies(data);
+        } else {
+          console.error("Erro ao buscar academias:", res.status);
+          alert("Erro ao carregar as academias.");
+        }
+      } catch (error) {
+        console.error("Erro ao buscar academias:", error);
+        alert("Erro de conexão ao buscar as academias.");
+      }
+    };
+
+    fetchAcademies();
+  }, []);
 
   const onFinish = async (values: any) => {
     setLoading(true);
@@ -24,7 +51,7 @@ export default function RegisterUser() {
           username: values.name,
           email: values.email,
           password: values.password,
-          parceira: values.parceira, // <-- novo campo aqui
+          parceira: values.parceira,
         }),
       });
 
@@ -85,12 +112,14 @@ export default function RegisterUser() {
             <Input.Password />
           </Form.Item>
 
-          {/* Campo parceira */}
+          {/* Campo parceira (Academia) */}
           <Form.Item name="parceira" label="Academia" rules={[{ required: true, message: "Selecione uma academia!" }]}>
             <Select placeholder="Selecione uma academia">
-              <Select.Option value={1}>Academia Alpha</Select.Option>
-              <Select.Option value={2}>Academia Beta</Select.Option>
-              <Select.Option value={3}>Academia StrongFit</Select.Option>
+              {academies.map((academia) => (
+                <Select.Option key={academia.id} value={academia.valor}>
+                  {academia.nome}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
 

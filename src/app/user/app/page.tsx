@@ -6,14 +6,13 @@ import styles from "./app.module.css";
 import Title from "antd/es/typography/Title";
 import { SlEnergy } from "react-icons/sl";
 
-
 const { Text, Paragraph } = Typography;
 const { Content } = Layout;
 
 export default function AppHome() {
-  const [peso, setPeso] = useState("70 kg");
-  const [altura, setAltura] = useState("1.75 m");
-  const [objetivo, setObjetivo] = useState("65 kg");
+  const [peso, setPeso] = useState("");
+  const [altura, setAltura] = useState("");
+  const [objetivo, setObjetivo] = useState("");
 
   const [modalVisible, setModalVisible] = useState(false);
   const [formValue, setFormValue] = useState("");
@@ -21,11 +20,10 @@ export default function AppHome() {
   const [name, setName] = useState<string | null>(null);
 
   const calcularIMC = () => {
-    const pesoNum = parseFloat(peso.replace(/[^\d.]/g, ""));
-    const alturaNum = parseFloat(altura.replace(/[^\d.]/g, ""));
+    const pesoNum = Number(peso.replace(/[^\d.]/g, ""));
+    const alturaNum = Number(altura.replace(/[^\d.]/g, ""));
     if (isNaN(pesoNum) || isNaN(alturaNum) || alturaNum === 0) return "N/A";
     const imc = pesoNum / (alturaNum * alturaNum);
-    console.log("pesoNum:", pesoNum, "alturaNum:", alturaNum, "imc:", imc);
     return imc.toFixed(2);
   };
 
@@ -41,7 +39,7 @@ export default function AppHome() {
 
   const openModal = (type: "peso" | "altura" | "objetivo", currentValue: string) => {
     setSelectedCard(type);
-    setFormValue(currentValue);
+    setFormValue(currentValue.replace(" kg", "").replace(" m", ""));
     setModalVisible(true);
   };
 
@@ -52,17 +50,22 @@ export default function AppHome() {
     switch (selectedCard) {
       case "peso":
         setPeso(`${newValue} kg`);
+        localStorage.setItem("peso", `${newValue} kg`);
         break;
       case "altura":
-        setAltura(`${newValue} m`);
+        // Ensure only one decimal point and use point
+        const cleanedValue = newValue.replace(/,/g, '.').replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+        setAltura(`${cleanedValue} m`);
+        localStorage.setItem("altura", `${cleanedValue} m`);
+        setFormValue(cleanedValue); // Update formValue to the cleaned value
         break;
       case "objetivo":
         setObjetivo(`${newValue} kg`);
+        localStorage.setItem("objetivo", `${newValue} kg`);
         break;
     }
 
     setModalVisible(false);
-    setFormValue("");
     setSelectedCard("");
   };
 
@@ -73,41 +76,54 @@ export default function AppHome() {
       const firstName = parsedUser?.name?.split(" ")[0] || null;
       setName(firstName);
     }
+
+    const storedPeso = localStorage.getItem("peso");
+    if (storedPeso) {
+      setPeso(storedPeso);
+    }
+    const storedAltura = localStorage.getItem("altura");
+    if (storedAltura) {
+      setAltura(storedAltura);
+    }
+    const storedObjetivo = localStorage.getItem("objetivo");
+    if (storedObjetivo) {
+      setObjetivo(storedObjetivo);
+    }
   }, []);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Content className={styles.content}>
         <div className={styles.cont}>
-          <div style={{flexDirection: 'row', display: 'flex'}}>
-          <Title className={styles.font}>
-            Bem-vindo{name ? `, ${name}` : ""}!
-          </Title>
-          <SlEnergy className={styles.icon} />
+          <div style={{ flexDirection: "row", display: "flex" }}>
+            <Title className={styles.font}>
+              Bem-vindo{name ? `, ${name}` : ""}!
+            </Title>
+            <SlEnergy className={styles.icon} />
           </div>
           <div className={styles.cardList}>
-            <Card className={styles.card} onClick={() => openModal("peso", peso.replace(" kg", ""))}>
-              <Text className={styles.sub} >Peso</Text>
-              <Paragraph className={styles.sub}>{peso}</Paragraph>
+            <Card className={styles.card} onClick={() => openModal("peso", peso)}>
+              <Text className={styles.sub}>Peso Atual</Text>
+              <Paragraph className={styles.sub}>{peso || "N/A"}</Paragraph>
             </Card>
 
-            <Card className={styles.card} onClick={() => openModal("altura", altura.replace(" m", ""))}>
-              <Text className={styles.sub} >Altura</Text>
-              <Paragraph className={styles.sub}>{altura}</Paragraph>
+            <Card className={styles.card} onClick={() => openModal("altura", altura)}>
+              <Text className={styles.sub}>Altura</Text>
+              <Paragraph className={styles.sub}>{altura || "N/A"}</Paragraph>
             </Card>
 
-            <Card className={styles.card} onClick={() => openModal("objetivo", objetivo.replace(" kg", ""))}>
-              <Text className={styles.sub} >Objetivo</Text>
-              <Paragraph className={styles.sub}>{objetivo}</Paragraph>
+            <Card className={styles.card} onClick={() => openModal("objetivo", objetivo)}>
+              <Text className={styles.sub}>Objetivo de Peso</Text>
+              <Paragraph className={styles.sub}>{objetivo || "N/A"}</Paragraph>
             </Card>
 
             <Card className={styles.card}>
-              <Text className={styles.sub} >IMC</Text>
+              <Text className={styles.sub}>IMC</Text>
               <Paragraph className={styles.sub}>{imc}</Paragraph>
             </Card>
 
             <Card className={styles.cardStatus}>
-              <Text className={styles.sub} >Status de Saúde</Text>
+              <Text className={styles.sub}>Status de Saúde</Text>
               <Paragraph strong style={{ color: "#1677ff" }}>
                 {imcStatus ? imcStatus.status : "IMC inválido"}
               </Paragraph>
@@ -128,7 +144,15 @@ export default function AppHome() {
           <Input
             placeholder="Digite o valor"
             value={formValue}
-            onChange={(e) => setFormValue(e.target.value)}
+            onChange={(e) => {
+              if (selectedCard === "altura") {
+                const newValue = e.target.value.replace(/,/g, '.');
+                setFormValue(newValue);
+              } else {
+                setFormValue(e.target.value);
+              }
+            }}
+            style={selectedCard === "altura" ? { textAlign: 'right' } : {}}
           />
         </Modal>
       </Content>

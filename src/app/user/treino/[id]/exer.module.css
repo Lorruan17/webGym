@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 20px !important;
 }
 
 .title {
@@ -45,7 +46,7 @@
   width: 60%;
   background-color: #6b96d6 !important;
   border-radius: 12px !important;
-  margin-bottom: 20px;
+  margin-bottom: 20px !important;
 
 }
 
@@ -55,8 +56,7 @@
 }
 
 .textRep{
-  font-size: 22;
+  font-size: 22px !important;
   margin-top: 20px;
-  padding: 10px;
-  border-radius: 20px;
+    
 }
