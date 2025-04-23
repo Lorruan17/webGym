@@ -1,11 +1,10 @@
-"use client";
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from "next/navigation";
 import styles from './dieta.module.css';
 import MainLayout from '@/app/sidebar/layout';
 import { Modal, Typography, Input, TimePicker } from 'antd';
 import dayjs from 'dayjs';
-
+import api from '@/app/utils/axiosInstance'; 
 
 type DietaData = {
     horario_cafe_da_manha?: string;
@@ -20,12 +19,10 @@ type DietaData = {
     ceia?: string;
     horario_alternativo?: string;
     alternativo?: string;
-    nome?: string; // Incluindo o nome como parte dos dados
-    username?: string; // Adicionando o username
-    email?: string; // Adicionando o email
+    nome?: string;
+    username?: string;
+    email?: string;
 };
-
-type DietaKeys = keyof DietaData;
 
 const Dieta = () => {
     const { id } = useParams();
@@ -37,7 +34,7 @@ const Dieta = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setDieta((prev) => ({ ...prev, [name as DietaKeys]: value }));
+        setDieta((prev) => ({ ...prev, [name]: value }));
     };
 
     const fetchDieta = async () => {
@@ -48,15 +45,13 @@ const Dieta = () => {
 
             if (!token) throw new Error("Token não encontrado.");
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
+            const response = await api.get(`/users/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            if (!response.ok) throw new Error("Erro ao buscar dieta.");
-
-            const data = await response.json();
+            const data = response.data;
             const dietaData: DietaData = {
                 horario_cafe_da_manha: data.horario_cafe_da_manha || '',
                 cafe_da_manha: data.cafe_da_manha || '',
@@ -71,8 +66,8 @@ const Dieta = () => {
                 horario_alternativo: data.horario_alternativo || '',
                 alternativo: data.alternativo || '',
                 nome: data.nome || 'Usuário',
-                username: data.username || 'Sem username', // Pega o username diretamente
-                email: data.email || 'Sem email', // Pega o email diretamente
+                username: data.username || 'Sem username',
+                email: data.email || 'Sem email',
             };
             setDieta(dietaData);
             setNomeUsuario(data.nome || 'Usuário');
@@ -95,25 +90,17 @@ const Dieta = () => {
 
             if (!token) throw new Error("Token não encontrado.");
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
-                method: "PUT",
+            const response = await api.put(`/users/${id}`, dieta, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(dieta),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Erro ao salvar dieta:', errorData);
-                alert('Erro ao salvar dieta. Tente novamente.');
-            } else {
-                const result = await response.json();
-                console.log('Resposta da API:', result);
-                alert('Dieta atualizada com sucesso!');
-                setIsModalOpen(false);
-            }
+            const result = response.data;
+            console.log('Resposta da API:', result);
+            alert('Dieta atualizada com sucesso!');
+            setIsModalOpen(false);
         } catch (error) {
             console.error('Erro ao salvar dieta', error);
             alert('Erro ao salvar dieta. Tente novamente.');
@@ -141,8 +128,8 @@ const Dieta = () => {
                     ].map(([label, refeicao, horario]) => (
                         <div key={refeicao} className={styles.card}>
                             <strong>{label}</strong>
-                            <p><strong>Horário:</strong> {dieta[horario as DietaKeys] || 'Não informado'}</p>
-                            <p><strong>Refeição:</strong> {dieta[refeicao as DietaKeys] || 'Não informado'}</p>
+                            <p><strong>Horário:</strong> {dieta[horario as keyof DietaData] || 'Não informado'}</p>
+                            <p><strong>Refeição:</strong> {dieta[refeicao as keyof DietaData] || 'Não informado'}</p>
                         </div>
                     ))}
                 </div>
@@ -173,7 +160,7 @@ const Dieta = () => {
                                 <TimePicker
                                     placeholder='Selecione o horário'
                                     name={horario}
-                                    value={dieta[horario as DietaKeys] ? dayjs(dieta[horario as DietaKeys], 'HH:mm') : null}
+                                    value={dieta[horario as keyof DietaData] ? dayjs(dieta[horario as keyof DietaData], 'HH:mm') : null}
                                     format="HH:mm"
                                     onChange={(time, timeString) =>
                                         handleChange({
@@ -185,7 +172,7 @@ const Dieta = () => {
                                 <TextArea
                                     placeholder="Descrição da refeição"
                                     name={refeicao}
-                                    value={dieta[refeicao as DietaKeys] || ''}
+                                    value={dieta[refeicao as keyof DietaData] || ''}
                                     onChange={handleChange}
                                     rows={2}
                                 />

@@ -6,6 +6,7 @@ import BottomBar from "../components/botom/BottomBar";
 import styles from "./treino.module.css";
 import { useRouter } from "next/navigation";
 import { getAccessToken } from "@/app/utils/auth";
+import api from "@/app/utils/axiosInstance";
 
 interface Exercicio {
   id: number;
@@ -71,32 +72,23 @@ export default function Treinos() {
       if (!token) throw new Error("Token não encontrado.");
 
       // Busca os treinos do usuário
-      const treinosResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/treino`, {
+      const treinosResponse = await api.get(`/treino`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!treinosResponse.ok) {
-        const errorData = await treinosResponse.json();
-        throw new Error(errorData?.message || `Erro ao buscar treinos: ${treinosResponse.status}`);
-      }
-
-      const treinosData: Exercicio[] = await treinosResponse.json();
+      const treinosData: Exercicio[] = treinosResponse.data;
       setAlunos(treinosData);
 
       // Busca os dados do usuário (incluindo a relação dos treinos por dia)
-      const usuarioResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${alunoId}`, {
+      const usuarioResponse = await api.get(`/users/${alunoId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!usuarioResponse.ok) throw new Error("Erro ao buscar usuário");
-      const usuarioData = await usuarioResponse.json();
-      if (!usuarioData) throw new Error("Usuário não encontrado.");
-
-      setUsuario(usuarioData);
+      setUsuario(usuarioResponse.data);
     } catch (error) {
       console.error("Erro ao buscar os dados:", error);
     } finally {

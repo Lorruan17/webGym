@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button, Card, Typography, Space, Modal, Avatar } from "antd";
 import { useRouter } from "next/navigation";
 import BottomBar from "../components/botom/BottomBar";
@@ -18,6 +18,8 @@ interface UserData {
 export default function PerfilPage() {
   const [userData, setUserData] = useState<UserData>({});
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null); // Evento do PWA
+  const [isInstalling, setIsInstalling] = useState(false);
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -26,6 +28,19 @@ export default function PerfilPage() {
     if (userStr) {
       setUserData(JSON.parse(userStr));
     }
+
+    // Detecta o evento beforeinstallprompt para PWA
+    const handler = (event: any) => {
+      event.preventDefault();
+      setDeferredPrompt(event); // Armazena o evento
+      setIsInstalling(true); // Habilita o botão de instalar
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
   }, []);
 
   const showModal = () => {
@@ -65,6 +80,21 @@ export default function PerfilPage() {
     }
   };
 
+  const handleInstall = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt(); // Exibe o prompt de instalação do PWA
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("Usuário aceitou a instalação do PWA");
+        } else {
+          console.log("Usuário rejeitou a instalação do PWA");
+        }
+        setDeferredPrompt(null); // Limpa o evento após a instalação
+        setIsInstalling(false);
+      });
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Card className={styles.card}>
@@ -93,14 +123,20 @@ export default function PerfilPage() {
           {userData.email && <Text type="secondary">{userData.email}</Text>}
         </div>
 
-
         <div className={styles.buttonGroup}>
           <Button type="primary" onClick={handleEdit} block className={`${styles.btn} ${styles.editBtn}`}>
             Editar Perfil
           </Button>
-          <Button type="primary" block className={`${styles.btn} ${styles.installBtn}`}>
-            Instalar o Aplicativo
-          </Button>
+          {isInstalling && (
+            <Button
+              type="primary"
+              block
+              onClick={handleInstall}
+              className={`${styles.btn} ${styles.installBtn}`}
+            >
+              Instalar o Aplicativo
+            </Button>
+          )}
           <Button danger onClick={showModal} block className={`${styles.btn} ${styles.logoutBtn}`}>
             Sair
           </Button>

@@ -8,18 +8,18 @@ export const refreshTokenRequest = async (refreshToken: string | undefined): Pro
 
   try {
     const response = await fetch(`${API_BASE_URL}/token/refresh`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ refresh_token: refreshToken }),
+      body: JSON.stringify({ oldToken: refreshToken }), // <- nome correto do campo
     });
 
     if (response.ok) {
-      return await response.json();
+      const data = await response.json();
+      return data;
     } else {
       console.error('Erro ao renovar o token:', response.status);
-      // Aqui você pode decidir se quer lançar um erro ou retornar null
       return null;
     }
   } catch (error) {

@@ -7,6 +7,8 @@ import styles from "./treinos.module.css";
 import MainLayout from "@/app/sidebar/layout";
 import { FixedSizeList as FlatList } from "react-window";
 import { getTreinos } from "@/app/utils/api";
+import api from "@/app/utils/axiosInstance";  // Importe a instância do axios
+
 
 interface Exercicio {
   id: number;
@@ -50,25 +52,27 @@ export default function AlunosPage() {
       try {
         setLoading(true);
 
+        // Obter o usuário e o token do localStorage
         const user = localStorage.getItem("user");
         const parsedUser = user ? JSON.parse(user) : null;
         const token = parsedUser?.token;
         if (!token) throw new Error("Token não encontrado.");
 
+        // Buscar dados de treinos
         const data = await getTreinos(token);
         setAlunos(data);
         setFilteredAlunos(data);
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        // Buscar dados do usuário específico
+        const response = await api.get(`/users/${alunoId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) throw new Error("Erro ao buscar usuários");
+        if (response.status < 200 || response.status >= 300) throw new Error("Erro ao buscar usuários");
 
-        const allUsers = await response.json();
-        const usuarioData = allUsers.find((user: any) => user.id === alunoId);
+        const usuarioData = await response.data;
         if (!usuarioData) throw new Error("Usuário não encontrado.");
 
         setUsuario(usuarioData);
@@ -421,7 +425,7 @@ export default function AlunosPage() {
         className={styles.modal}
       >
         <Space direction="vertical" style={{ width: "100%" }}>
-        {diasSemana.map((dia) => (
+          {diasSemana.map((dia) => (
             <Button key={dia} onClick={() => adicionarTreinoAoDia(dia)} block>
               {dia}
             </Button>

@@ -6,6 +6,7 @@ import { Layout, Card, Typography, Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined, BugOutlined, BulbOutlined } from "@ant-design/icons";
 import MainLayout from "../sidebar/layout";
 import styles from "./config.module.css"; // Importe o arquivo de estilos
+import api from "@/app/utils/axiosInstance"; // Axios configurado com lógica de refresh
 
 const { Title } = Typography;
 const { Item } = Form;
@@ -43,10 +44,8 @@ export default function SettingsPage() {
     }
   }, [router, form]);
 
-  const onFinishEditAccount = (values: SettingsForm) => {
-    // Aqui você faria a chamada à API para atualizar os dados da conta
-    console.log("Dados da conta para atualizar:", values);
-
+  const onFinishEditAccount = async (values: SettingsForm) => {
+    // Verificação das senhas
     if (!values.currentPassword) {
       message.error("Por favor, insira sua senha atual para salvar as alterações.");
       return;
@@ -57,21 +56,43 @@ export default function SettingsPage() {
       return;
     }
 
-    // Envie 'values' (incluindo currentPassword) para a sua API de atualização de conta
-    message.success("Dados da conta atualizados com sucesso!");
-    form.resetFields(['currentPassword', 'password', 'confirmPassword']); // Limpa os campos de senha após o sucesso
-    // Opcional: Atualizar o localStorage com os novos dados do usuário
+    try {
+      const token = localStorage.getItem("user")
+        ? JSON.parse(localStorage.getItem("user")!).token
+        : null;
+
+      if (token) {
+        const response = await api.put("/updateUser", values, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          message.success("Dados da conta atualizados com sucesso!");
+          form.resetFields(['currentPassword', 'password', 'confirmPassword']);
+          // Opcional: Atualizar o localStorage com os novos dados do usuário
+          const updatedUser = { ...user, ...values };
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+        }
+      } else {
+        message.error("Token não encontrado.");
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar dados:", error);
+      message.error("Erro ao atualizar dados.");
+    }
   };
 
   const onFinishSuggestion = (values: SettingsForm) => {
-    // Aqui você faria a chamada à API para enviar a sugestão
+    // Enviar sugestão para API
     console.log("Sugestão enviada:", values.suggestion);
     message.success("Sua sugestão foi enviada. Obrigado!");
     form.resetFields(['suggestion']); // Limpa o campo de sugestão
   };
 
   const onFinishReport = (values: SettingsForm) => {
-    // Aqui você faria a chamada à API para reportar o erro
+    // Enviar erro para API
     console.log("Relatório de erro enviado:", values.report);
     message.success("Seu relatório de erro foi enviado. Investigaremos em breve!");
     form.resetFields(['report']); // Limpa o campo de relatório

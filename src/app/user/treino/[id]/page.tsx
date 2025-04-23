@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import styles from './exer.module.css'
-import { Button, Typography } from 'antd'
+import { Button, Typography, message } from 'antd'
+import api from '@/app/utils/axiosInstance'
 
 export default function TreinoDetalhe() {
   const [treino, setTreino] = useState<any>(null)
@@ -20,16 +21,16 @@ export default function TreinoDetalhe() {
       if (!token) return;
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/treino/${id}`, {
+        const response = await api.get(`/treino/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setTreino(data);
+        if (response.status === 200) {
+          setTreino(response.data);
         }
       } catch (error) {
         console.error('Erro ao buscar treino:', error);
+        message.error('Erro ao carregar treino.');
       }
     };
 
@@ -41,27 +42,25 @@ export default function TreinoDetalhe() {
       const userStorage = JSON.parse(localStorage.getItem('user') as string);
       const token = userStorage?.token;
       const userId = userStorage?.id;
-  
+
       if (!token || !userId) return;
-  
+
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`, {
+        const response = await api.get(`/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Dados do usuário:', data); // Adicione o log aqui
-          setUsuario(data);
+
+        if (response.status === 200) {
+          setUsuario(response.data);
         }
       } catch (error) {
         console.error('Erro ao buscar usuário:', error);
+        message.error('Erro ao carregar dados do usuário.');
       }
     };
-  
+
     fetchUsuario();
   }, []);
-  
 
   useEffect(() => {
     if (!treino?.url_image || treino.url_image.length === 0) return;

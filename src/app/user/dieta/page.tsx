@@ -2,20 +2,17 @@
 import { useEffect, useState } from "react";
 import styles from "./dieta.module.css";
 import BottomBar from "../components/botom/BottomBar";
-import { Typography, Button } from "antd";
+import { Typography, Button, message } from "antd";
 import {
   CoffeeOutlined,
   AppleOutlined,
   MoonOutlined,
   ClockCircleOutlined,
-  ShopOutlined,
-  ContainerOutlined,
-  FireOutlined,
   BoxPlotOutlined,
   ForkOutlined,
-  SyncOutlined
+  SyncOutlined,
 } from "@ant-design/icons";
-
+import api from "@/app/utils/axiosInstance";
 
 const { Title, Text } = Typography;
 
@@ -58,7 +55,8 @@ export default function DietaPage() {
     localStorage.setItem("dieta", JSON.stringify(data));
   };
 
-  const fetchDietaFromServer = () => {
+  // Usando axiosInstance para buscar dieta do servidor
+  const fetchDietaFromServer = async () => {
     setLoading(true);
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
@@ -75,25 +73,21 @@ export default function DietaPage() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Erro na requisição");
-        return res.json();
-      })
-      .then((data) => {
-        setUserData(data);
-        saveDietaToStorage(data);
-      })
-      .catch((err) => {
-        console.error("Erro ao buscar dados do usuário:", err);
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      const response = await api.get(`/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      setUserData(response.data);
+      saveDietaToStorage(response.data);
+    } catch (err) {
+      console.error("Erro ao buscar dados do usuário:", err);
+      message.error("Não foi possível carregar a dieta.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getIcon = (titulo: string) => {
@@ -128,7 +122,7 @@ export default function DietaPage() {
 
   return (
     <div className={styles.container}>
-      <div style={{ display: "flex", justifyContent: "space-row", alignItems: "center", marginBottom: 16, alignSelf: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <Title level={2} className={styles.pageTitle}>Minha Dieta</Title>
         <Button onClick={fetchDietaFromServer} loading={loading} icon={<SyncOutlined />} size="small" className={styles.btnn}>
           Atualizar

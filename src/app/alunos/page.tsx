@@ -1,10 +1,11 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
-import { Button, Table, Space, Input, Typography } from "antd";
+import { Button, Input, Typography, Space } from "antd";
 import { useRouter } from "next/navigation";
 import styles from "./alunos.module.css"; // Arquivo de estilos
 import MainLayout from "../sidebar/layout";
 import { FixedSizeList as FlatList } from "react-window";
+import api from "@/app/utils/axiosInstance"; // Axios configurado com lógica de refresh
 
 interface Aluno {
   id: number;
@@ -23,26 +24,29 @@ export default function AlunosPage() {
   useEffect(() => {
     const fetchAlunos = async () => {
       try {
-        const token = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")!).token : null;
-        if (token) {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`, 
-            },
-          });
+        setLoading(true);
 
-          if (response.ok) {
-            const data = await response.json();
-            setAlunos(data);
-            setFilteredAlunos(data);
-          } else {
-            console.error("Falha ao obter dados dos alunos");
-          }
+        const token = localStorage.getItem("user")
+          ? JSON.parse(localStorage.getItem("user")!).token
+          : null;
+        if (!token) throw new Error("Token não encontrado.");
+
+        const response = await api.get("/users", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setAlunos(response.data);
+          setFilteredAlunos(response.data);
+        } else {
+          console.error("Falha ao obter dados dos alunos");
         }
       } catch (error) {
         console.error("Erro ao fazer requisição:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
