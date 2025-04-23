@@ -50,7 +50,7 @@ api.interceptors.response.use(
   }
 );
 
-export const getTreinos = async () => {
+export const getTreinos = async (token: any) => {
   try {
     const response = await api.get('/treino');
     return response.data;

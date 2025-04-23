@@ -70,7 +70,7 @@ export default function Treinos() {
       const token = getAccessToken();
       if (!token) throw new Error("Token não encontrado.");
 
-      const data = await getTreinos(); // Busca todos os treinos do usuário
+      const data = await getTreinos(token); // Busca todos os treinos do usuário
       setAlunos(data);
     } catch (error) {
       console.error("Erro ao buscar os treinos:", error);

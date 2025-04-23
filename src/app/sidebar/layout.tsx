@@ -27,7 +27,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    router.push("/");
+    router.push("/login");
   };
 
   useEffect(() => {
