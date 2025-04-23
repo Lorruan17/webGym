@@ -38,7 +38,7 @@ export default function PerfilPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    router.push("/");
+    router.push("/user");
   };
 
   const handleEdit = () => {

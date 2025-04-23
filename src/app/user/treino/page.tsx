@@ -4,7 +4,6 @@ import { Typography, Button } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import BottomBar from "../components/botom/BottomBar";
 import styles from "./treino.module.css";
-import { getTreinos } from "@/app/utils/api";
 import { useRouter } from "next/navigation";
 import { getAccessToken } from "@/app/utils/auth";
 
@@ -17,6 +16,7 @@ interface Exercicio {
 export default function Treinos() {
   const [alunos, setAlunos] = useState<Exercicio[]>([]);
   const [loading, setLoading] = useState(false);
+  const [usuario, setUsuario] = useState<any>(null);
   const [treinosPorDia, setTreinosPorDia] = useState<Record<string, Exercicio[]>>({});
 
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function Treinos() {
     return false;
   }, [alunoId]);
 
-  const fetchTreinosDoServidor = useCallback(async () => {
+  const fetchDadosDoServidor = useCallback(async () => {
     try {
       if (!alunoId) throw new Error("Aluno não encontrado no localStorage.");
       setLoading(true);
@@ -70,42 +70,62 @@ export default function Treinos() {
       const token = getAccessToken();
       if (!token) throw new Error("Token não encontrado.");
 
-      const data = await getTreinos(token); // Busca todos os treinos do usuário
-      setAlunos(data);
+      // Busca os treinos do usuário
+      const treinosResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/treino`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!treinosResponse.ok) {
+        const errorData = await treinosResponse.json();
+        throw new Error(errorData?.message || `Erro ao buscar treinos: ${treinosResponse.status}`);
+      }
+
+      const treinosData: Exercicio[] = await treinosResponse.json();
+      setAlunos(treinosData);
+
+      // Busca os dados do usuário (incluindo a relação dos treinos por dia)
+      const usuarioResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${alunoId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!usuarioResponse.ok) throw new Error("Erro ao buscar usuário");
+      const usuarioData = await usuarioResponse.json();
+      if (!usuarioData) throw new Error("Usuário não encontrado.");
+
+      setUsuario(usuarioData);
     } catch (error) {
-      console.error("Erro ao buscar os treinos:", error);
+      console.error("Erro ao buscar os dados:", error);
     } finally {
       setLoading(false);
     }
-  }, [alunoId, getTreinos]);
+  }, [alunoId]);
 
   useEffect(() => {
     if (!carregarTreinosLocalmente()) {
-      fetchTreinosDoServidor();
+      fetchDadosDoServidor();
     }
-  }, [carregarTreinosLocalmente, fetchTreinosDoServidor]);
+  }, [carregarTreinosLocalmente, fetchDadosDoServidor]);
 
   useEffect(() => {
-    if (alunos.length > 0 && alunoId) {
+    if (usuario && alunos.length > 0) {
       const novoTreinosPorDia: Record<string, Exercicio[]> = {};
-      const userStr = localStorage.getItem("user");
-      const usuario = userStr ? JSON.parse(userStr) : null;
+      diasSemana.forEach((dia) => {
+        const chave = mapDia[diasSemana.indexOf(dia) as keyof typeof mapDia];
+        const ids = usuario[chave] || [];
+        const idList = Array.isArray(ids)
+          ? ids.map((item: any) => (typeof item === "object" ? item.id : item))
+          : [];
 
-      if (usuario) {
-        diasSemana.forEach((dia) => {
-          const chave = mapDia[diasSemana.indexOf(dia) as keyof typeof mapDia];
-          const ids = usuario[chave] || [];
-          const idList = Array.isArray(ids)
-            ? ids.map((item: any) => (typeof item === "object" ? item.id : item))
-            : [];
-
-          novoTreinosPorDia[dia] = alunos.filter((t) => idList.includes(t.id));
-        });
-        setTreinosPorDia(novoTreinosPorDia);
-        salvarTreinosLocalmente(novoTreinosPorDia);
-      }
+        novoTreinosPorDia[dia] = alunos.filter((t) => idList.includes(t.id));
+      });
+      setTreinosPorDia(novoTreinosPorDia);
+      salvarTreinosLocalmente(novoTreinosPorDia);
     }
-  }, [alunos, alunoId, salvarTreinosLocalmente]);
+  }, [usuario, alunos, salvarTreinosLocalmente]);
 
   const { Title, Text } = Typography;
 
@@ -122,9 +142,9 @@ export default function Treinos() {
     <div className={styles.container}>
       <div className={styles.dayContainer}>
         <div className={styles.dayCard}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "row", alignItems: "center", marginBottom: 16 }}>
             <Title className={styles.dayTitle}>Meus Treinos</Title>
-            <Button onClick={fetchTreinosDoServidor} loading={loading} size="small" icon={<SyncOutlined />} className={styles.btnn}>
+            <Button onClick={fetchDadosDoServidor} loading={loading} size="small" icon={<SyncOutlined />} className={styles.btnn}>
               Atualizar
             </Button>
           </div>

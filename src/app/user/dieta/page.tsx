@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import styles from "./dieta.module.css";
 import BottomBar from "../components/botom/BottomBar";
-import { Typography } from "antd";
+import { Typography, Button } from "antd";
 import {
   CoffeeOutlined,
   AppleOutlined,
@@ -12,7 +12,8 @@ import {
   ContainerOutlined,
   FireOutlined,
   BoxPlotOutlined,
-  ForkOutlined
+  ForkOutlined,
+  SyncOutlined
 } from "@ant-design/icons";
 
 
@@ -35,16 +36,44 @@ type UserData = {
 
 export default function DietaPage() {
   const [userData, setUserData] = useState<UserData>({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    loadDietaFromStorage();
+    fetchDietaFromServer();
+  }, []);
+
+  const loadDietaFromStorage = () => {
+    const storedDieta = localStorage.getItem("dieta");
+    if (storedDieta) {
+      try {
+        setUserData(JSON.parse(storedDieta));
+      } catch (error) {
+        console.error("Erro ao parsear dieta do localStorage:", error);
+      }
+    }
+  };
+
+  const saveDietaToStorage = (data: UserData) => {
+    localStorage.setItem("dieta", JSON.stringify(data));
+  };
+
+  const fetchDietaFromServer = () => {
+    setLoading(true);
     const storedUser = localStorage.getItem("user");
-    if (!storedUser) return;
+    if (!storedUser) {
+      setLoading(false);
+      return;
+    }
 
     const parsedUser = JSON.parse(storedUser);
     const token = parsedUser.token;
     const { id } = parsedUser;
 
-    if (!token || !id) return;
+    if (!token || !id) {
+      setLoading(false);
+      return;
+    }
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
       headers: {
@@ -57,22 +86,26 @@ export default function DietaPage() {
       })
       .then((data) => {
         setUserData(data);
+        saveDietaToStorage(data);
       })
       .catch((err) => {
         console.error("Erro ao buscar dados do usuário:", err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, []);
+  };
 
   const getIcon = (titulo: string) => {
     switch (titulo) {
       case "Café da Manhã":
         return <CoffeeOutlined className={styles.refeicaoIcon} />;
       case "Almoço":
-        return <ForkOutlined className={styles.refeicaoIcon} />; // Usando RestaurantOutlined
+        return <ForkOutlined className={styles.refeicaoIcon} />;
       case "Lanche da Tarde":
         return <AppleOutlined className={styles.refeicaoIcon} />;
       case "Jantar":
-        return <BoxPlotOutlined className={styles.refeicaoIcon} />; // Usando RestaurantOutlined
+        return <BoxPlotOutlined className={styles.refeicaoIcon} />;
       case "Ceia":
         return <MoonOutlined className={styles.refeicaoIcon} />;
       case "Refeição Alternativa":
@@ -95,7 +128,12 @@ export default function DietaPage() {
 
   return (
     <div className={styles.container}>
-      <Title level={2} className={styles.pageTitle}>Minha Dieta</Title>
+      <div style={{ display: "flex", justifyContent: "space-row", alignItems: "center", marginBottom: 16, alignSelf: "center" }}>
+        <Title level={2} className={styles.pageTitle}>Minha Dieta</Title>
+        <Button onClick={fetchDietaFromServer} loading={loading} icon={<SyncOutlined />} size="small" className={styles.btnn}>
+          Atualizar
+        </Button>
+      </div>
       {renderRefeicao("Café da Manhã", userData.horario_cafe_da_manha, userData.cafe_da_manha)}
       {renderRefeicao("Almoço", userData.horario_almoco, userData.almoco)}
       {renderRefeicao("Lanche da Tarde", userData.horario_lanche_da_tarde, userData.lanche_da_tarde)}
