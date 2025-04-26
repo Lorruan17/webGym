@@ -3,39 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Layout, Card, Statistic, Typography, Divider } from "antd";
-import { UsergroupAddOutlined } from "@ant-design/icons";
-import styles from "./home.module.css";
+import { UsergroupAddOutlined, FireOutlined, HeartFilled } from "@ant-design/icons";
+import styles from "./home.module.css"; // Importe o arquivo CSS
 import MainLayout from "../sidebar/layout";
 
 const { Title, Paragraph, Text } = Typography;
-
-const cardStyle: React.CSSProperties = {
-  borderRadius: 10,
-  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-  marginBottom: 32, // Aumentei a margem inferior para separar mais
-};
-
-const statisticStyle: React.CSSProperties = {
-  fontWeight: 600, // Deixei a fonte mais forte
-  fontSize: '1.5em', // Aumentei um pouco o tamanho
-  marginBottom: 8,
-};
-
-const iconStyle: React.CSSProperties = {
-  fontSize: 40, // Aumentei o tamanho do ícone
-  color: '#1890ff',
-  marginRight: 16,
-};
-
-const presentationStyle: React.CSSProperties = {
-  padding: '24px',
-  background: '#f7f7f7', // Adicionei um background sutil
-  borderRadius: 8,
-};
-
-const featureItemStyle: React.CSSProperties = {
-  marginBottom: 16,
-};
 
 interface User {
   id: string;
@@ -56,7 +28,6 @@ export default function HomePage() {
       router.push("/login");
     }
 
-    // Simulação de chamada de API
     fetchTotalAlunos();
   }, [router]);
 
@@ -66,55 +37,43 @@ export default function HomePage() {
 
   return (
     <MainLayout>
-      <div style={{ padding: '24px' }}>
-        <Title level={2} style={{ marginBottom: 32 }}>
-          Painel de Administração
+      <div className={styles.container}>
+        <Title level={2} className={styles.pageTitle}>
+          <FireOutlined className={styles.titleIcon} /> Painel de Administração
         </Title>
-
-        <Card
-          style={{
-            borderRadius: 12,
-            boxShadow: '0 8px 16px rgba(0,0,0,0.08)',
-            marginBottom: 32,
-            border: '1px solid #d9d9d9',
-          }}
-        >
-          <Statistic
-            title={<Text style={{ fontSize: '1.2em', color: 'rgba(0, 0, 0, 0.85)' }}>Total de Alunos</Text>}
-            value={totalAlunos}
-            prefix={<UsergroupAddOutlined style={{ ...iconStyle, color: 'blue' }} />}
-            valueStyle={{ ...statisticStyle, color: 'blue' }}
-          />
-        </Card>
-
-        <div style={presentationStyle}>
-          <Title level={4} style={{ marginBottom: 0 }}>Bem-vindo ao</Title>
-          <Title level={2} style={{ marginTop: 0, marginBottom: 24 }}>[Nome do Seu SaaS]</Title>
-          <Title level={3} style={{ marginBottom: 24 }}>Sua Plataforma Completa</Title>
-          <Paragraph style={{ fontSize: '1.1em', lineHeight: '1.7' }}>
-            Descubra uma nova maneira de gerenciar sua academia e engajar seus alunos.
-            <Text strong>[Nome do Seu SaaS]</Text> oferece as ferramentas que você precisa para otimizar suas operações e proporcionar uma experiência excepcional aos seus membros.
+        <div className={styles.presentation}>
+          <Title level={3} className={styles.presentationTitle}>Bem-vindo ao <Text strong className={styles.lorysGymText} style={{fontSize: 25}}>LorysGym</Text></Title>
+          <Paragraph className={styles.presentationParagraph}>
+            Descubra uma nova maneira de gerenciar sua academia e fortalecer o relacionamento com seus alunos.
+            <Text strong className={styles.lorysGymText}> LorysGym</Text> oferece as ferramentas essenciais para otimizar suas operações e elevar a experiência dos seus membros.
           </Paragraph>
 
-          <Divider />
+          <Divider className={styles.divider} />
 
-          <Title level={4}>Recursos em Disponíveis:</Title>
-          <div style={{ marginTop: 16 }}>
-
-            <div style={featureItemStyle}>
-              <Text strong style={{ fontSize: '1.1em' }}>Treinos Personalizadas (PWA para Alunos):</Text>
-              <Paragraph>Crie e acompanhe planos de treino aos alunos via um aplicativo web progressivo moderno.</Paragraph>
+          <Title level={4} className={styles.featuresTitle}>Recursos em Destaque:</Title>
+          <div className={styles.featuresContainer}>
+            <div className={styles.featureItem}>
+              <HeartFilled className={styles.featureIcon} />
+              <div>
+                <Text strong className={styles.featureText}>Treinos Personalizados (PWA para Alunos):</Text>
+                <Paragraph className={styles.featureParagraph}>Crie e acompanhe planos de treino personalizados, acessíveis aos alunos através de um aplicativo web progressivo moderno e intuitivo.</Paragraph>
+              </div>
             </div>
-            <div style={featureItemStyle}>
-              <Text strong style={{ fontSize: '1.1em' }}>Campo de Dietas (PWA para Alunos):</Text>
-              <Paragraph>Adicione Dietas no sistema e logo em seguida já fica disponível para o aluno</Paragraph>
+            <div className={styles.featureItem}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#27ae60" className={styles.featureIcon}>
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+              </svg>
+              <div>
+                <Text strong className={styles.featureText}>Campo de Dietas (PWA para Alunos):</Text>
+                <Paragraph className={styles.featureParagraph}>Adicione planos de dietas detalhados no sistema, tornando-os imediatamente disponíveis para consulta e acompanhamento pelos alunos.</Paragraph>
+              </div>
             </div>
           </div>
 
-          <Divider />
+          <Divider className={styles.divider} />
 
-          <Paragraph style={{ fontSize: '1.1em', lineHeight: '1.7' }}>
-            Explore o menu ao lado para começar a transformar a gestão da sua academia. Se precisar de ajuda, nossa equipe está pronta para você!
+          <Paragraph className={styles.presentationParagraph}>
+            Explore o menu lateral para descobrir todas as funcionalidades que <Text strong className={styles.lorysGymText}>LorysGym</Text> oferece. Se precisar de qualquer assistência, nossa equipe está à disposição para ajudar você a alcançar o sucesso!
           </Paragraph>
         </div>
       </div>

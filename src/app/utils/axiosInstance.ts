@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { refreshTokenRequest } from './tokenService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -7,7 +6,6 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Flag para evitar múltiplas chamadas de refresh simultâneas
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
@@ -23,17 +21,31 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-// Interceptor de resposta
+const refreshTokenRequest = async (oldToken: string | undefined) => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/token/refresh`,
+      {
+        oldToken: oldToken,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 api.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      localStorage.getItem('refresh_token')
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       if (isRefreshing) {
@@ -53,18 +65,27 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        const data = await refreshTokenRequest(refreshToken || undefined);
+        const userString = localStorage.getItem('user');
+        const oldToken = userString ? JSON.parse(userString).token : undefined;
 
-        if (data?.token) {
-          localStorage.setItem('token', data.token);
-          processQueue(null, data.token);
+        if (!oldToken) {
+          processQueue(new Error('Token antigo não encontrado no localStorage'), null);
+          return Promise.reject(error);
+        }
 
-          originalRequest.headers['Authorization'] = `Bearer ${data.token}`;
+        const data = await refreshTokenRequest(oldToken);
+
+        if (data) {
+          const newToken = typeof data === 'string' ? data : data.token;
+          localStorage.setItem('token', newToken);
+          processQueue(null, newToken);
+
+          originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
           return api(originalRequest);
         } else {
-          processQueue(new Error('Erro ao renovar token'), null);
-          return Promise.reject(error);
+          const refreshError = new Error('Erro ao renovar token: Token não retornado ou data inválida');
+          processQueue(refreshError, null);
+          return Promise.reject(refreshError);
         }
       } catch (err) {
         processQueue(err, null);
@@ -78,7 +99,6 @@ api.interceptors.response.use(
   }
 );
 
-// Interceptor de requisição (para adicionar o token automaticamente)
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   if (token) {

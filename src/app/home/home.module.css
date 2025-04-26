@@ -1,39 +1,98 @@
-/* home.module.css */
 .container {
-  padding: 24px;
+  padding: 32px;
 }
 
-.card {
-  margin-bottom: 32px; /* Ajustei para corresponder ao componente */
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.pageTitle {
+  margin-bottom: 32px;
+  color: #333;
+  display: flex;
+  align-items: center;
 }
 
-.ant-card-head-title {
-  font-weight: 500;
+.titleIcon {
+  margin-right: 12px;
+}
+
+.statsContainer {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.statCard {
+  flex: 1;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
 }
 
 .statistic {
-  font-size: 1.5em; /* Ajustei para corresponder ao componente */
-  font-weight: 600; /* Ajustei para corresponder ao componente */
-  margin-bottom: 8px; /* Ajustei para corresponder ao componente */
+  font-size: 1.8em;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #2ecc71;
 }
 
-/* Estilos adicionais para o tooltip, se você os manteve (não estão sendo usados agora) */
-.customTooltip {
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.statIcon {
+  font-size: 48px;
+  color: #3498db;
+  margin-right: 20px;
 }
 
-.customTooltip .label {
-  margin: 0;
-  font-weight: bold;
+.presentation {
+  padding: 32px;
+  background: linear-gradient(135deg, #f0f8ff, #e6f7ff);
+  border-radius: 10px;
+  border: 1px solid #d9d9d9;
+}
+
+.presentationTitle {
+  margin-bottom: 12px;
   color: #333;
 }
 
-.customTooltip .intro {
-  margin: 5px 0;
+.lorysGymText {
+  color: #3498db;
+}
+
+.presentationParagraph {
+  font-size: 1.15em;
+  line-height: 1.8;
+  color: #555;
+}
+
+.divider {
+  border-color: #d9d9d9;
+  margin-bottom: 24px;
+  margin-top: 24px;
+}
+
+.featuresTitle {
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.featuresContainer {
+  margin-top: 16px;
+}
+
+.featureItem {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.featureIcon {
+  font-size: 24px;
+  color: #f39c12;
+  margin-right: 16px;
+}
+
+.featureText {
+  font-size: 1.1em;
+  color: #333;
+}
+
+.featureParagraph {
   color: #666;
 }
