@@ -14,11 +14,17 @@ interface Exercicio {
   descricao: string;
 }
 
+interface TreinoFinalizadoInfo {
+  id: number;
+  dataFinalizacao: string;
+}
+
 export default function Treinos() {
   const [alunos, setAlunos] = useState<Exercicio[]>([]);
   const [loading, setLoading] = useState(false);
   const [usuario, setUsuario] = useState<any>(null);
   const [treinosPorDia, setTreinosPorDia] = useState<Record<string, Exercicio[]>>({});
+  const [treinosFinalizadosHoje, setTreinosFinalizadosHoje] = useState<TreinoFinalizadoInfo[]>([]);
 
   const router = useRouter();
   const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
@@ -30,6 +36,7 @@ export default function Treinos() {
 
   const getDiaAtualStr = () => diasSemana[(new Date().getDay() + 6) % 7];
   const diaAtualStr = getDiaAtualStr();
+  const hoje = new Date().toISOString().split('T')[0];
 
   const mapDia = {
     6: "dom_ex",
@@ -71,7 +78,6 @@ export default function Treinos() {
       const token = getAccessToken();
       if (!token) throw new Error("Token não encontrado.");
 
-      // Busca os treinos do usuário
       const treinosResponse = await api.get(`/treino`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -81,7 +87,6 @@ export default function Treinos() {
       const treinosData: Exercicio[] = treinosResponse.data;
       setAlunos(treinosData);
 
-      // Busca os dados do usuário (incluindo a relação dos treinos por dia)
       const usuarioResponse = await api.get(`/users/${alunoId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -97,6 +102,11 @@ export default function Treinos() {
   }, [alunoId]);
 
   useEffect(() => {
+    const storedFinalizadosHoje = localStorage.getItem('treinosFinalizadosHoje');
+    if (storedFinalizadosHoje) {
+      setTreinosFinalizadosHoje(JSON.parse(storedFinalizadosHoje));
+    }
+
     if (!carregarTreinosLocalmente()) {
       fetchDadosDoServidor();
     }
@@ -130,6 +140,12 @@ export default function Treinos() {
     }
   };
 
+  const treinoFinalizadoHoje = (treinoId: number): boolean => {
+    return treinosFinalizadosHoje.some(
+      (t) => t.id === treinoId && t.dataFinalizacao === hoje
+    );
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.dayContainer}>
@@ -146,7 +162,9 @@ export default function Treinos() {
               {treinosPorDia[diaAtualStr].map((treino) => (
                 <div
                   key={treino.id}
-                  className={styles.exerciseCard}
+                  className={`${styles.exerciseCard} ${
+                    treinoFinalizadoHoje(treino.id) ? styles.treinoFinalizado : ''
+                  }`}
                   onClick={() => verTreino(treino.id)}
                 >
                   <div>

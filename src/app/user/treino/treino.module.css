@@ -88,3 +88,9 @@
   background-color: #91c0ec !important;
   color: #fff !important;
 }
+
+.treinoFinalizado {
+  background-color: #7cdb48; 
+  border: 1px solid #87d068; 
+  color: #389e0d; 
+}

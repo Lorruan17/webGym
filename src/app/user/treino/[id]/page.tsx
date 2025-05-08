@@ -1,16 +1,44 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import styles from './exer.module.css'
 import { Button, Typography, message } from 'antd'
 import api from '@/app/utils/axiosInstance'
+
+interface TreinoFinalizadoInfo {
+  id: number;
+  dataFinalizacao: string;
+}
 
 export default function TreinoDetalhe() {
   const [treino, setTreino] = useState<any>(null)
   const [usuario, setUsuario] = useState<any>(null)
   const [imageIndex, setImageIndex] = useState(0)
   const params = useParams()
+  const router = useRouter()
   const id = params?.id as string
+
+  const finalizarTreino = () => {
+    if (!treino) return;
+
+    const hoje = new Date().toISOString().split('T')[0];
+    const treinoFinalizadoInfo: TreinoFinalizadoInfo = {
+      id: treino.id,
+      dataFinalizacao: hoje,
+    };
+
+    const treinosFinalizadosHoje = JSON.parse(localStorage.getItem('treinosFinalizadosHoje') || '[]');
+    const jaFinalizadoHoje = treinosFinalizadosHoje.some(
+      (t: TreinoFinalizadoInfo) => t.id === treino.id && t.dataFinalizacao === hoje
+    );
+
+    if (!jaFinalizadoHoje) {
+      treinosFinalizadosHoje.push(treinoFinalizadoInfo);
+      localStorage.setItem('treinosFinalizadosHoje', JSON.stringify(treinosFinalizadosHoje));
+    }
+
+    router.push('/user/treino');
+  };
 
   useEffect(() => {
     const fetchTreino = async () => {
@@ -89,8 +117,8 @@ export default function TreinoDetalhe() {
       6: 'sáb_s_r',
     };
 
-    const hoje = new Date().getDay();
-    const campoHoje = diasSemanaMap[hoje];
+    const hojeDaSemana = new Date().getDay();
+    const campoHoje = diasSemanaMap[hojeDaSemana];
     const infoHoje = usuario[campoHoje];
     if (infoHoje && infoHoje.length === 2) {
       const [series, repeticoes] = infoHoje;
@@ -120,7 +148,7 @@ export default function TreinoDetalhe() {
 
       {renderSeriesRepeticoes()}
 
-      <Button className={styles.btn}>
+      <Button className={styles.btn} onClick={finalizarTreino}>
         <Text className={styles.textBtn}>Finalizar</Text>
       </Button>
     </div>
