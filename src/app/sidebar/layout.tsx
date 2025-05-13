@@ -26,7 +26,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const [name, setName] = useState<string | null>(null);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.clear();
     router.push("/login");
   };
 

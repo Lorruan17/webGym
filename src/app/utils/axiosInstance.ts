@@ -66,7 +66,7 @@ api.interceptors.response.use(
 
       try {
         const userString = localStorage.getItem('user');
-        const oldToken = userString ? JSON.parse(userString).token : undefined;
+        const oldToken = userString ? JSON.parse(userString)?.token : undefined;
 
         if (!oldToken) {
           processQueue(new Error('Token antigo não encontrado no localStorage'), null);
@@ -77,7 +77,15 @@ api.interceptors.response.use(
 
         if (data) {
           const newToken = typeof data === 'string' ? data : data.token;
-          localStorage.setItem('token', newToken);
+
+          // Atualiza o token dentro do objeto user no localStorage
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) {
+            const user = JSON.parse(storedUser);
+            const updatedUser = { ...user, token: newToken };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+          }
+
           processQueue(null, newToken);
 
           originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
@@ -100,7 +108,8 @@ api.interceptors.response.use(
 );
 
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
+  const userString = localStorage.getItem('user');
+  const token = userString ? JSON.parse(userString)?.token : null;
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }

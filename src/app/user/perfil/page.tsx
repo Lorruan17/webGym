@@ -51,7 +51,7 @@ export default function PerfilPage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.clear();
     router.push("/user");
   };
 

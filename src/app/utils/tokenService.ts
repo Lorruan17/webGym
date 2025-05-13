@@ -12,7 +12,7 @@ export const refreshTokenRequest = async (refreshToken: string | undefined): Pro
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ oldToken: refreshToken }), // <- nome correto do campo
+      body: JSON.stringify({ oldToken: refreshToken }), 
     });
 
     if (response.ok) {

@@ -16,7 +16,7 @@ import api from "@/app/utils/axiosInstance";
 
 const { Title, Text } = Typography;
 
-type UserData = {
+type DietaData = {
   horario_cafe_da_manha?: string;
   horario_almoco?: string;
   horario_lanche_da_tarde?: string;
@@ -31,31 +31,52 @@ type UserData = {
   alternativo?: string;
 };
 
+type UserData = {
+  id?: number;
+  token?: string;
+  // Outras propriedades do usuário podem estar aqui...
+  dieta?: DietaData;
+};
+
 export default function DietaPage() {
   const [userData, setUserData] = useState<UserData>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadDietaFromStorage();
+    loadDietaFromUserStorage();
     fetchDietaFromServer();
   }, []);
 
-  const loadDietaFromStorage = () => {
-    const storedDieta = localStorage.getItem("dieta");
-    if (storedDieta) {
+  const loadDietaFromUserStorage = () => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
       try {
-        setUserData(JSON.parse(storedDieta));
+        const parsedUser: UserData = JSON.parse(storedUser);
+        setUserData(parsedUser);
       } catch (error) {
-        console.error("Erro ao parsear dieta do localStorage:", error);
+        console.error("Erro ao parsear usuário do localStorage:", error);
       }
     }
   };
 
-  const saveDietaToStorage = (data: UserData) => {
-    localStorage.setItem("dieta", JSON.stringify(data));
+  const saveDietaToUserStorage = (dietaData: DietaData) => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsedUser: UserData = JSON.parse(storedUser);
+        const updatedUser = { ...parsedUser, dieta: dietaData };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setUserData(updatedUser); // Atualiza o estado local também
+      } catch (error) {
+        console.error("Erro ao atualizar dieta no localStorage:", error);
+      }
+    } else {
+      // Se não houver usuário no storage, criamos um novo com a dieta
+      localStorage.setItem("user", JSON.stringify({ dieta: dietaData }));
+      setUserData({ dieta: dietaData });
+    }
   };
 
-  // Usando axiosInstance para buscar dieta do servidor
   const fetchDietaFromServer = async () => {
     setLoading(true);
     const storedUser = localStorage.getItem("user");
@@ -64,9 +85,8 @@ export default function DietaPage() {
       return;
     }
 
-    const parsedUser = JSON.parse(storedUser);
-    const token = parsedUser.token;
-    const { id } = parsedUser;
+    const parsedUser: UserData = JSON.parse(storedUser);
+    const { token, id } = parsedUser;
 
     if (!token || !id) {
       setLoading(false);
@@ -80,8 +100,40 @@ export default function DietaPage() {
         },
       });
 
-      setUserData(response.data);
-      saveDietaToStorage(response.data);
+      // Assumindo que a API retorna todos os dados do usuário, incluindo a dieta
+      const {
+        horario_cafe_da_manha,
+        horario_almoco,
+        horario_lanche_da_tarde,
+        horario_jantar,
+        horario_ceia,
+        horario_alternativo,
+        cafe_da_manha,
+        almoco,
+        lanche_da_tarde,
+        jantar,
+        ceia,
+        alternativo,
+        ...otherUserData // Captura outras propriedades do usuário
+      } = response.data;
+
+      const dietaData: DietaData = {
+        horario_cafe_da_manha,
+        horario_almoco,
+        horario_lanche_da_tarde,
+        horario_jantar,
+        horario_ceia,
+        horario_alternativo,
+        cafe_da_manha,
+        almoco,
+        lanche_da_tarde,
+        jantar,
+        ceia,
+        alternativo,
+      };
+
+      // Salva apenas os dados da dieta dentro da estrutura do usuário no localStorage
+      saveDietaToUserStorage(dietaData);
     } catch (err) {
       console.error("Erro ao buscar dados do usuário:", err);
       message.error("Não foi possível carregar a dieta.");
@@ -128,12 +180,12 @@ export default function DietaPage() {
           Atualizar
         </Button>
       </div>
-      {renderRefeicao("Café da Manhã", userData.horario_cafe_da_manha, userData.cafe_da_manha)}
-      {renderRefeicao("Almoço", userData.horario_almoco, userData.almoco)}
-      {renderRefeicao("Lanche da Tarde", userData.horario_lanche_da_tarde, userData.lanche_da_tarde)}
-      {renderRefeicao("Jantar", userData.horario_jantar, userData.jantar)}
-      {renderRefeicao("Ceia", userData.horario_ceia, userData.ceia)}
-      {renderRefeicao("Refeição Alternativa", userData.horario_alternativo, userData.alternativo)}
+      {renderRefeicao("Café da Manhã", userData.dieta?.horario_cafe_da_manha, userData.dieta?.cafe_da_manha)}
+      {renderRefeicao("Almoço", userData.dieta?.horario_almoco, userData.dieta?.almoco)}
+      {renderRefeicao("Lanche da Tarde", userData.dieta?.horario_lanche_da_tarde, userData.dieta?.lanche_da_tarde)}
+      {renderRefeicao("Jantar", userData.dieta?.horario_jantar, userData.dieta?.jantar)}
+      {renderRefeicao("Ceia", userData.dieta?.horario_ceia, userData.dieta?.ceia)}
+      {renderRefeicao("Refeição Alternativa", userData.dieta?.horario_alternativo, userData.dieta?.alternativo)}
       <BottomBar />
     </div>
   );
